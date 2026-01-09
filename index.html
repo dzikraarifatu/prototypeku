@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ADAPTA-NATION Real Cam</title>
+    <title>ADAPTA-NATION Responsive</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -12,34 +12,82 @@
     <style>
         :root { --primary: #10b981; --primary-dark: #047857; --accent: #f59e0b; --bg-light: #f3f4f6; --white: #ffffff; --text-dark: #1f2937; --danger: #ef4444; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg-light); height: 100vh; width: 100vw; overflow: hidden; }
-        .app-container { width: 100%; height: 100%; background: var(--bg-light); position: relative; overflow: hidden; max-width: 100%; }
         
-        /* LOGIN STYLES */
-        .login-bg { background: linear-gradient(135deg, #064e3b 0%, #059669 100%) !important; color: white !important; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px; z-index: 3000; }
+        /* === PERUBAHAN UTAMA: BODY & CONTAINER FULL SCREEN === */
+        body { 
+            background: var(--bg-light); 
+            height: 100vh; 
+            width: 100vw; 
+            overflow: hidden; /* Mencegah scroll pada body utama */
+        }
+        
+        .app-container { 
+            width: 100%; 
+            height: 100%; 
+            background: var(--bg-light); 
+            position: relative; 
+            overflow: hidden; 
+            border: none; /* HAPUS BORDER */
+            border-radius: 0; /* HAPUS RADIUS */
+            box-shadow: none; /* HAPUS SHADOW */
+            max-width: 100%; /* Full width */
+        }
+
+        /* Responsive Layout untuk Desktop/Laptop */
+        @media (min-width: 768px) {
+            .app-container {
+                /* Opsional: Jika ingin membatasi lebar konten di tengah pada layar sangat lebar */
+                /* max-width: 600px; margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.1); */
+            }
+            /* Grid menu jadi 4 kolom di layar lebar */
+            .action-grid { grid-template-columns: repeat(4, 1fr) !important; }
+            /* Market jadi lebih banyak kolom */
+            .market-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important; }
+        }
+        
+        /* LOGIN & REGISTER STYLES */
+        .login-bg { 
+            background: linear-gradient(135deg, #064e3b 0%, #059669 100%) !important;
+            color: white !important; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px; 
+            z-index: 3000;
+        }
         .login-logo { font-size: 80px; margin-bottom: 10px; animation: float 3s infinite ease-in-out; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); }
-        .login-input { width: 100%; max-width: 400px; padding: 15px; margin: 10px 0; border-radius: 15px; border: none; background: rgba(255,255,255,0.15); color: white; backdrop-filter: blur(5px); outline: none; border: 1px solid rgba(255,255,255,0.5); font-weight: 500; }
+        /* Input dibatasi lebarnya di desktop agar tidak kepanjangan */
+        .login-input { 
+            width: 100%; max-width: 400px; /* Max width for desktop */
+            padding: 15px; margin: 10px 0; border-radius: 15px; border: none; 
+            background: rgba(255,255,255,0.15); color: white; backdrop-filter: blur(5px); outline: none; 
+            border: 1px solid rgba(255,255,255,0.5); font-weight: 500;
+        }
         .login-input::placeholder { color: rgba(255,255,255,0.8); }
-        .login-btn { background: var(--accent); color: white; width: 100%; max-width: 400px; padding: 15px; border-radius: 15px; border: none; font-weight: bold; font-size: 16px; margin-top: 20px; cursor: pointer; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.6); transition: 0.3s; }
+        .login-btn { 
+            background: var(--accent); color: white; width: 100%; max-width: 400px;
+            padding: 15px; border-radius: 15px; 
+            border: none; font-weight: bold; font-size: 16px; margin-top: 20px; cursor: pointer; 
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.6); transition: 0.3s; 
+        }
         .login-btn:active { transform: scale(0.98); }
         .btn-outline-white { background: transparent; border: 2px solid rgba(255,255,255,0.9); color: white; width: 100%; max-width: 400px; padding: 15px; border-radius: 15px; font-weight: bold; margin-top: 10px; cursor: pointer; transition: 0.3s;}
         .btn-outline-white:hover { background: rgba(255,255,255,0.2); }
+
         @keyframes float { 0% { transform: translateY(0px) scale(1); } 50% { transform: translateY(-15px) scale(1.05); } 100% { transform: translateY(0px) scale(1); } }
 
         /* HEADER */
         .header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); padding: 40px 20px 25px; color: white; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); position: relative; z-index: 10; }
         .header-top { display: flex; justify-content: space-between; align-items: center; max-width: 1000px; margin: 0 auto; width: 100%; }
         .coin-badge { background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 20px; display: flex; align-items: center; gap: 5px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.3); cursor: pointer; }
+        
+        /* CONTENT WRAPPER UNTUK LAYAR LEBAR */
         .content-wrapper { max-width: 1000px; margin: 0 auto; width: 100%; }
 
-        /* SCREENS */
+        /* SCREENS & SCROLLING */
         .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-light); display: none; flex-direction: column; overflow-y: auto; padding-bottom: 90px; }
         .screen.active { display: flex; animation: slideUp 0.3s cubic-bezier(0.165, 0.84, 0.44, 1); }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
         /* COMPONENTS */
         .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px; }
-        @media (min-width: 768px) { .action-grid { grid-template-columns: repeat(4, 1fr) !important; } .market-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important; } }
         .action-btn { background: var(--white); padding: 20px; border-radius: 20px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 2px solid transparent; }
         .action-btn:active { transform: scale(0.95); }
         .action-btn i { font-size: 28px; color: var(--primary); margin-bottom: 10px; }
@@ -57,12 +105,22 @@
         .list-item:hover { background: #ecfdf5; color: var(--primary); }
         #map-container-real { height: 100%; width: 100%; z-index: 1; }
         
-        /* MARKET */
-        .category-scroll { display:flex; gap:10px; overflow-x:auto; padding: 10px 20px; scrollbar-width: none; width: 100%; max-width: 1000px; margin: 0 auto; cursor: grab; }
-        .category-scroll:active { cursor: grabbing; }
+        /* MARKET (FIXED SCROLL) */
+        .category-scroll { 
+            display:flex; gap:10px; overflow-x:auto; padding: 10px 20px; 
+            scrollbar-width: none;
+            width: 100%; max-width: 1000px; margin: 0 auto;
+        }
         .category-scroll::-webkit-scrollbar { display: none; }
-        .cat-pill { background:white; color:#666; padding:8px 16px; border-radius:20px; font-size:12px; white-space: nowrap; cursor: pointer; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex: 0 0 auto; }
+        
+        .cat-pill { 
+            background:white; color:#666; padding:8px 16px; border-radius:20px; font-size:12px; 
+            white-space: nowrap; cursor: pointer; border: 1px solid #ddd; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            flex-shrink: 0; 
+        }
         .cat-pill.active { background: var(--primary); color: white; border-color: var(--primary); }
+        
         .market-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
         .market-item { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s; }
         .market-item:active { transform: scale(0.98); }
@@ -77,9 +135,19 @@
         .avatar-img { width: 45px; height: 45px; border-radius: 50%; margin: 0 10px; border: 2px solid #eee; background: #f3f4f6; }
         .profile-header { text-align: center; padding: 20px; background: white; margin-bottom: 10px; }
         .profile-pic { width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--primary); margin-bottom: 10px; background: #f3f4f6; }
-        .badges-scroll { display: flex; gap: 15px; overflow-x: auto; padding: 15px 20px; scrollbar-width: none; scroll-snap-type: x mandatory; padding-right: 20px; max-width: 1000px; margin: 0 auto; cursor: grab; }
-        .badges-scroll:active { cursor: grabbing; }
-        .badge-item { min-width: 80px; text-align: center; font-size: 10px; scroll-snap-align: start; flex: 0 0 auto; }
+        
+        /* PERBAIKAN BADGE SCROLL */
+        .badges-scroll { 
+            display: flex; gap: 15px; overflow-x: auto; padding: 15px 20px; 
+            scrollbar-width: none; scroll-snap-type: x mandatory; 
+            padding-right: 20px; 
+            max-width: 1000px; margin: 0 auto;
+        }
+        .badge-item { 
+            min-width: 80px; text-align: center; font-size: 10px; 
+            scroll-snap-align: start; 
+            flex-shrink: 0;
+        }
         .badge-icon { width: 60px; height: 60px; background: #e0f2fe; border-radius: 50%; margin: 0 auto 5px; display: flex; justify-content: center; align-items: center; font-size: 24px; color: #0284c7; }
         
         /* MODALS */
@@ -97,16 +165,6 @@
         .nav-fab { background: var(--primary); width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 24px; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4); transform: translateY(-25px); border: 5px solid var(--bg-light); cursor: pointer; }
         .back-btn { cursor: pointer; margin-right: 15px; font-size: 18px; }
         
-        /* CAMERA STYLE UPDATES */
-        #camera-feed-container {
-            position: absolute; width: 100%; height: 100%;
-            display: flex; justify-content: center; align-items: center;
-            background: #000;
-        }
-        video { width: 100%; height: 100%; object-fit: cover; }
-        #camera-canvas { display: none; }
-        #captured-image { position: absolute; width: 100%; height: 100%; object-fit: cover; display: none; z-index: 10; }
-
         @keyframes scanLine { 0% {top:0;} 100% {top:100%;} }
     </style>
 </head>
@@ -119,8 +177,8 @@
         <h1 style="font-weight: 700; margin-bottom: 5px; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">ADAPTA-NATION</h1>
         <p style="opacity: 0.9; margin-bottom: 40px; font-size: 20px; font-weight: 500;"> From Apathy To Action</p>
         
-        <input type="text" placeholder="Email" class="login-input" value="rian@adapta.id">
-        <input type="password" placeholder="Password" class="login-input" value="123456">
+        <input type="text" placeholder="Email" class="login-input">
+        <input type="password" placeholder="Password" class="login-input">
         
         <button class="login-btn" onclick="doLogin()">Masuk Sekarang</button>
         <button class="btn-outline-white" onclick="navTo('register')">Daftar Akun Baru</button>
@@ -133,10 +191,12 @@
             <i class="fas fa-arrow-left" style="font-size:24px; cursor:pointer;" onclick="navTo('login')"></i>
         </div>
         <h2 style="margin-bottom: 20px;">Buat Akun</h2>
+        
         <input type="text" id="reg-name" placeholder="Nama Lengkap" class="login-input">
         <input type="email" placeholder="Email" class="login-input">
         <input type="password" placeholder="Password" class="login-input">
         <input type="password" placeholder="Konfirmasi Password" class="login-input">
+        
         <button class="login-btn" onclick="doRegisterSubmit()">Daftar Sekarang</button>
     </div>
 
@@ -230,23 +290,12 @@
     </div>
 
     <div id="scan" class="screen" style="background: black;">
-        <div id="camera-feed-container">
-            <video id="video-feed" autoplay playsinline></video>
-            <canvas id="camera-canvas"></canvas>
-            <img id="captured-image" src="" alt="Captured">
-            
-            <div style="position:absolute; width:100%; height:100%; display:grid; grid-template-columns:1fr 1fr 1fr; grid-template-rows:1fr 1fr 1fr; z-index:5;"><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div></div>
-            
-            <div id="scanning-anim" style="display:none; position:absolute; top:20%; left:10%; width:80%; max-width:400px; height:60%; border:3px solid var(--primary); box-shadow:0 0 15px var(--primary); border-radius:10px; overflow:hidden; z-index:20;"><div style="width:100%; height:5px; background:var(--primary); box-shadow:0 0 10px white; position:absolute; animation:scanLine 1.5s infinite;"></div><div style="position:absolute; bottom:10px; left:0; width:100%; text-align:center; color:white; font-weight:bold; text-shadow:0 1px 2px black;">Menganalisis AI...</div></div>
+        <div id="camera-view" style="flex:1; position:relative; display:flex; justify-content:center; align-items:center; overflow:hidden;">
+            <img src="https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?q=80&w=1000&auto=format&fit=crop" style="position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0.6;">
+            <div style="position:absolute; width:100%; height:100%; display:grid; grid-template-columns:1fr 1fr 1fr; grid-template-rows:1fr 1fr 1fr;"><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div></div>
+            <div id="scanning-anim" style="display:none; position:absolute; top:20%; left:10%; width:80%; max-width:400px; height:60%; border:3px solid var(--primary); box-shadow:0 0 15px var(--primary); border-radius:10px; overflow:hidden;"><div style="width:100%; height:5px; background:var(--primary); box-shadow:0 0 10px white; position:absolute; animation:scanLine 1.5s infinite;"></div><div style="position:absolute; bottom:10px; left:0; width:100%; text-align:center; color:white; font-weight:bold; text-shadow:0 1px 2px black;">Menganalisis AI...</div></div>
         </div>
-
-        <div style="position:absolute; bottom:0; width:100%; height:150px; background:linear-gradient(to top, black, transparent); display:flex; justify-content:space-around; align-items:center; padding:0 20px; z-index:30;">
-            <div onclick="navTo('home')" style="color:white; font-size:12px; cursor:pointer;">Batal</div>
-            <div onclick="takePhoto()" style="width:70px; height:70px; border-radius:50%; border:4px solid white; display:flex; justify-content:center; align-items:center; cursor:pointer; background:rgba(255,255,255,0.2);">
-                <div style="width:60px; height:60px; background:white; border-radius:50%;"></div>
-            </div>
-            <div style="color:white; font-size:24px;"><i class="fas fa-bolt"></i></div>
-        </div>
+        <div style="height:150px; background:black; display:flex; justify-content:space-around; align-items:center; padding:0 20px;"><div onclick="navTo('home')" style="color:white; font-size:12px; cursor:pointer;">Batal</div><div onclick="takePhoto()" style="width:70px; height:70px; border-radius:50%; border:4px solid white; display:flex; justify-content:center; align-items:center; cursor:pointer;"><div style="width:60px; height:60px; background:white; border-radius:50%;"></div></div><div style="color:white; font-size:24px;"><i class="fas fa-bolt"></i></div></div>
     </div>
 
     <div id="register-success-modal" class="modal" style="z-index: 3500;">
@@ -301,13 +350,21 @@ let actionHistoryLog = [
     { title: "Pilah Sampah Organik", date: "Hari ini, 10:00", coin: "+500" },
     { title: "Lapor Selokan Mampet", date: "Kemarin", coin: "+300" }
 ];
-let statWaste = 12; let statCO2 = 4; let statMissions = 8;
+
+// DATA STATISTIK AWAL
+let statWaste = 12; // kg
+let statCO2 = 4; // kg
+let statMissions = 8;
+
+// === DATA LEADERBOARD AWAL (BOTS + USER) ===
 let leaderboardData = [
     { id: 'siti', name: 'Siti Aminah', role: 'Duta Lingkungan', xp: 5200, avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=Siti&gender=female', isUser: false },
     { id: 'budi', name: 'Budi Santoso', role: 'Mahasiswa', xp: 4800, avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=Budi&gender=male', isUser: false },
     { id: 'burt', name: 'Bu RT 05', role: 'Tokoh Warga', xp: 4100, avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=BuRT&gender=female', isUser: false },
     { id: 'user', name: 'Arifatu Dzikra (Anda)', role: 'Penjaga Sungai', xp: 750, avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=Rian&gender=male', isUser: true }
 ];
+
+// === DATABASE LENGKAP ===
 const indonesiaMapData = {
     "Aceh": ["Banda Aceh", "Sabang", "Lhokseumawe", "Langsa", "Subulussalam", "Kab. Aceh Besar", "Kab. Pidie", "Kab. Aceh Utara", "Kab. Aceh Timur"],
     "Sumatera Utara": ["Medan", "Binjai", "Pematangsiantar", "Tebing Tinggi", "Sibolga", "Tanjungbalai", "Padang Sidempuan", "Gunungsitoli", "Kab. Deli Serdang", "Kab. Karo", "Kab. Langkat"],
@@ -348,6 +405,8 @@ const indonesiaMapData = {
     "Papua Pegunungan": ["Kab. Jayawijaya (Wamena)", "Kab. Yahukimo"],
     "Papua Barat Daya": ["Sorong", "Kab. Sorong", "Kab. Raja Ampat"]
 };
+
+// === DATABASE KOORDINAT SINKRON LENGKAP ===
 const cityCoordinates = {
     "Banda Aceh": [5.5483, 95.3238], "Sabang": [5.8953, 95.3175], "Lhokseumawe": [5.1802, 97.1503], "Langsa": [4.4714, 97.9658], "Subulussalam": [2.6394, 98.0044], "Kab. Aceh Besar": [5.3789, 95.5336], "Kab. Pidie": [5.1833, 95.9556], "Kab. Aceh Utara": [4.9755, 97.1601], "Kab. Aceh Timur": [4.6293, 97.6696],
     "Medan": [3.5952, 98.6722], "Binjai": [3.6042, 98.4842], "Pematangsiantar": [2.9613, 99.0620], "Tebing Tinggi": [3.3283, 99.1625], "Sibolga": [1.7335, 98.7845], "Tanjungbalai": [2.9652, 99.8000], "Padang Sidempuan": [1.3737, 99.2735], "Gunungsitoli": [1.2842, 97.6083], "Kab. Deli Serdang": [3.4988, 98.7180], "Kab. Karo": [3.1075, 98.4952], "Kab. Langkat": [3.7383, 98.2435],
@@ -392,6 +451,8 @@ const cityCoordinates = {
 const marketItems = [ { id: 1, cat: 'pulsa', name: 'Pulsa 10k (All Op)', price: 1200, icon: 'fa-mobile-alt', color: '#3b82f6' }, { id: 2, cat: 'pulsa', name: 'Data 2GB Indosat', price: 2500, icon: 'fa-wifi', color: '#3b82f6' }, { id: 3, cat: 'pulsa', name: 'Data 3GB Tsel', price: 3500, icon: 'fa-wifi', color: '#ef4444' }, { id: 4, cat: 'wallet', name: 'Gopay 20.000', price: 2200, icon: 'fa-wallet', color: '#10b981' }, { id: 5, cat: 'wallet', name: 'ShopeePay 20k', price: 2200, icon: 'fa-shopping-bag', color: '#f97316' }, { id: 6, cat: 'umkm', name: 'Sedotan Bambu', price: 500, icon: 'fa-leaf', color: '#84cc16' }, { id: 7, cat: 'umkm', name: 'Tas Totebag Eco', price: 1500, icon: 'fa-shopping-basket', color: '#f59e0b' }, { id: 8, cat: 'umkm', name: 'Sabun Organik', price: 800, icon: 'fa-pump-soap', color: '#ec4899' }, { id: 9, cat: 'donasi', name: '1 Bibit Mangrove', price: 2000, icon: 'fa-tree', color: '#047857' }, { id: 10, cat: 'donasi', name: 'Pakan Kucing Jalanan', price: 1000, icon: 'fa-cat', color: '#f59e0b' } ];
 let map = null; let currentItem = null;
 
+window.onload = function() { renderProvinceList(); renderMarket('all'); updateBalanceUI(); renderActionHistory(); renderLeaderboard(); };
+
 // --- ENABLE DRAG SCROLL (JAVASCRIPT) ---
 function enableDragScroll(elm) {
     let isDown = false;
@@ -414,22 +475,9 @@ function enableDragScroll(elm) {
         elm.scrollLeft = scrollLeft - walk;
     });
 }
+// Terapkan ke elemen scroll
+document.querySelectorAll('.category-scroll, .badges-scroll').forEach(enableDragScroll);
 
-// Function to attach listeners after DOM load
-window.onload = function() {
-    renderProvinceList(); 
-    renderMarket('all'); 
-    updateBalanceUI(); 
-    renderActionHistory(); 
-    renderLeaderboard();
-    
-    // Attach drag scroll to dynamically or statically created scroll containers
-    const scrollContainers = document.querySelectorAll('.category-scroll, .badges-scroll');
-    scrollContainers.forEach(enableDragScroll);
-};
-
-// ... [SISA KODE LOGIC SAMA DENGAN SEBELUMNYA] ... 
-// (Agar tidak terlalu panjang, logic JS di bawah ini sama persis dengan yang sudah fix sebelumnya)
 
 // LOGIC UTAMA
 function doLogin() { document.getElementById('login').classList.remove('active'); document.getElementById('home').classList.add('active'); document.getElementById('bottom-nav').style.display='flex'; }
@@ -589,70 +637,12 @@ function processTransaction() {
 
 function openHistory() { const list = document.getElementById('history-list'); if(transactionHistory.length === 0) { list.innerHTML = '<p style="font-size:12px; color:#999; text-align:center;">Belum ada penukaran baru.</p>'; } else { list.innerHTML = ''; transactionHistory.forEach(h => { list.innerHTML += `<div style="display:flex; justify-content:space-between; border-bottom:1px solid #eee; padding:5px 0; font-size:12px;"><span>${h.name}</span><b style="color:#ef4444;">-${h.price}</b></div>`; }); } document.getElementById('history-modal').style.display = 'flex'; }
 
-// CAMERA LOGIC (REAL)
-function takePhoto() {
-    const video = document.getElementById('video-feed');
-    const canvas = document.getElementById('camera-canvas');
-    const photo = document.getElementById('captured-image');
-    
-    // Set canvas dimensions equal to video
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    
-    // Draw current frame to canvas
-    const context = canvas.getContext('2d');
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    
-    // Show captured image
-    photo.src = canvas.toDataURL('image/png');
-    photo.style.display = 'block';
-    video.style.display = 'none'; // Hide video stream
-    
-    // Start Analysis Animation
-    document.getElementById('scanning-anim').style.display = 'block';
-    
-    setTimeout(() => { 
-        document.getElementById('scanning-anim').style.display = 'none'; 
-        document.getElementById('reward-modal').style.display = 'flex'; 
-        
-        // Stop stream to save battery
-        const stream = video.srcObject;
-        const tracks = stream.getTracks();
-        tracks.forEach(track => track.stop());
-    }, 2000); 
-}
-
-// Start Camera when Navigating to Scan
-function startCamera() {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-        .then(function (stream) {
-            const video = document.getElementById('video-feed');
-            video.srcObject = stream;
-            video.play();
-            // Reset view
-            document.getElementById('captured-image').style.display = 'none';
-            video.style.display = 'block';
-        })
-        .catch(function (err) {
-            console.log("Something went wrong with camera!", err);
-            alert("Tidak dapat mengakses kamera. Pastikan izin diberikan.");
-        });
-    }
-}
-
-// Hook startCamera into navTo
-const originalNavTo = navTo;
-navTo = function(screenId) {
-    originalNavTo(screenId);
-    if(screenId === 'scan') {
-        startCamera();
-    }
-};
+function takePhoto() { document.getElementById('scanning-anim').style.display = 'block'; setTimeout(() => { document.getElementById('scanning-anim').style.display = 'none'; document.getElementById('reward-modal').style.display = 'flex'; }, 2000); }
 
 function claimReward() { 
     userBalance += 500; 
     
+    // UPDATE LOGIC STATS (NAIK TERUS)
     statWaste += 1.5; 
     statCO2 += 0.5;
     statMissions += 1;
@@ -676,4 +666,6 @@ function claimReward() {
 }
 </script>
 </body>
+
 </html>
+
