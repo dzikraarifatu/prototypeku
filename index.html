@@ -2,49 +2,52 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ADAPTA-NATION Responsive</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ADAPTA-NATION Final</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <style>
-        :root { --primary: #10b981; --primary-dark: #047857; --accent: #f59e0b; --bg-light: #f3f4f6; --white: #ffffff; --text-dark: #1f2937; --danger: #ef4444; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
-        
-        /* === PERUBAHAN UTAMA: BODY & CONTAINER FULL SCREEN === */
-        body { 
-            background: var(--bg-light); 
-            height: 100vh; 
-            width: 100vw; 
-            overflow: hidden; /* Mencegah scroll pada body utama */
+        :root { 
+            --primary: #10b981; --primary-dark: #047857; --accent: #f59e0b; 
+            --bg-light: #f3f4f6; --white: #ffffff; --text-dark: #1f2937; --danger: #ef4444; 
+            --app-max-width: 500px; /* Batas lebar ideal di Laptop agar rapi */
         }
         
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background: #e0e0e0; /* Warna background luar di laptop */
+            height: 100vh; /* Fallback */
+            height: 100dvh; /* Dynamic Height untuk Mobile Browser */
+            width: 100vw; 
+            display: flex; 
+            justify-content: center; 
+            overflow: hidden; 
+        }
+
+        /* CONTAINER UTAMA (RESPONSIVE) */
         .app-container { 
             width: 100%; 
             height: 100%; 
             background: var(--bg-light); 
             position: relative; 
             overflow: hidden; 
-            border: none; /* HAPUS BORDER */
-            border-radius: 0; /* HAPUS RADIUS */
-            box-shadow: none; /* HAPUS SHADOW */
-            max-width: 100%; /* Full width */
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Responsive Layout untuk Desktop/Laptop */
-        @media (min-width: 768px) {
+        /* TAMPILAN LAPTOP / TABLET */
+        @media (min-width: 501px) {
             .app-container {
-                /* Opsional: Jika ingin membatasi lebar konten di tengah pada layar sangat lebar */
-                /* max-width: 600px; margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.1); */
+                max-width: var(--app-max-width);
+                box-shadow: 0 0 50px rgba(0,0,0,0.1); /* Shadow halus di kiri kanan */
             }
-            /* Grid menu jadi 4 kolom di layar lebar */
-            .action-grid { grid-template-columns: repeat(4, 1fr) !important; }
-            /* Market jadi lebih banyak kolom */
-            .market-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important; }
+            body { background: #cbd5e1; } /* Warna abu elegan di sisi luar app */
         }
-        
+
         /* LOGIN & REGISTER STYLES */
         .login-bg { 
             background: linear-gradient(135deg, #064e3b 0%, #059669 100%) !important;
@@ -53,36 +56,43 @@
             z-index: 3000;
         }
         .login-logo { font-size: 80px; margin-bottom: 10px; animation: float 3s infinite ease-in-out; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); }
-        /* Input dibatasi lebarnya di desktop agar tidak kepanjangan */
         .login-input { 
-            width: 100%; max-width: 400px; /* Max width for desktop */
-            padding: 15px; margin: 10px 0; border-radius: 15px; border: none; 
+            width: 100%; padding: 15px; margin: 10px 0; border-radius: 15px; border: none; 
             background: rgba(255,255,255,0.15); color: white; backdrop-filter: blur(5px); outline: none; 
             border: 1px solid rgba(255,255,255,0.5); font-weight: 500;
         }
         .login-input::placeholder { color: rgba(255,255,255,0.8); }
         .login-btn { 
-            background: var(--accent); color: white; width: 100%; max-width: 400px;
-            padding: 15px; border-radius: 15px; 
+            background: var(--accent); color: white; width: 100%; padding: 15px; border-radius: 15px; 
             border: none; font-weight: bold; font-size: 16px; margin-top: 20px; cursor: pointer; 
             box-shadow: 0 4px 15px rgba(245, 158, 11, 0.6); transition: 0.3s; 
         }
         .login-btn:active { transform: scale(0.98); }
-        .btn-outline-white { background: transparent; border: 2px solid rgba(255,255,255,0.9); color: white; width: 100%; max-width: 400px; padding: 15px; border-radius: 15px; font-weight: bold; margin-top: 10px; cursor: pointer; transition: 0.3s;}
+        .btn-outline-white { background: transparent; border: 2px solid rgba(255,255,255,0.9); color: white; width: 100%; padding: 15px; border-radius: 15px; font-weight: bold; margin-top: 10px; cursor: pointer; transition: 0.3s;}
         .btn-outline-white:hover { background: rgba(255,255,255,0.2); }
 
         @keyframes float { 0% { transform: translateY(0px) scale(1); } 50% { transform: translateY(-15px) scale(1.05); } 100% { transform: translateY(0px) scale(1); } }
 
         /* HEADER */
-        .header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); padding: 40px 20px 25px; color: white; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); position: relative; z-index: 10; }
-        .header-top { display: flex; justify-content: space-between; align-items: center; max-width: 1000px; margin: 0 auto; width: 100%; }
+        .header { 
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
+            padding: 40px 20px 25px; 
+            /* Support Notch HP */
+            padding-top: max(40px, env(safe-area-inset-top)); 
+            color: white; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; 
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); position: relative; z-index: 10; flex-shrink: 0;
+        }
+        .header-top { display: flex; justify-content: space-between; align-items: center; }
         .coin-badge { background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 20px; display: flex; align-items: center; gap: 5px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.3); cursor: pointer; }
         
-        /* CONTENT WRAPPER UNTUK LAYAR LEBAR */
-        .content-wrapper { max-width: 1000px; margin: 0 auto; width: 100%; }
-
         /* SCREENS & SCROLLING */
-        .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-light); display: none; flex-direction: column; overflow-y: auto; padding-bottom: 90px; }
+        .screen { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: var(--bg-light); display: none; flex-direction: column; 
+            overflow-y: auto; 
+            padding-bottom: 100px; /* Space for Bottom Nav */
+            padding-bottom: calc(90px + env(safe-area-inset-bottom)); /* Safe area for iPhone X+ */
+        }
         .screen.active { display: flex; animation: slideUp 0.3s cubic-bezier(0.165, 0.84, 0.44, 1); }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
@@ -109,15 +119,17 @@
         .category-scroll { 
             display:flex; gap:10px; overflow-x:auto; padding: 10px 20px; 
             scrollbar-width: none;
-            width: 100%; max-width: 1000px; margin: 0 auto;
+            white-space: nowrap; flex-wrap: nowrap;
+            cursor: grab;
         }
+        .category-scroll:active { cursor: grabbing; }
         .category-scroll::-webkit-scrollbar { display: none; }
         
         .cat-pill { 
             background:white; color:#666; padding:8px 16px; border-radius:20px; font-size:12px; 
             white-space: nowrap; cursor: pointer; border: 1px solid #ddd; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            flex-shrink: 0; 
+            flex: 0 0 auto; /* PENTING: Jangan mengecil! */
         }
         .cat-pill.active { background: var(--primary); color: white; border-color: var(--primary); }
         
@@ -140,26 +152,32 @@
         .badges-scroll { 
             display: flex; gap: 15px; overflow-x: auto; padding: 15px 20px; 
             scrollbar-width: none; scroll-snap-type: x mandatory; 
-            padding-right: 20px; 
-            max-width: 1000px; margin: 0 auto;
+            padding-right: 20px; flex-wrap: nowrap; cursor: grab;
         }
+        .badges-scroll:active { cursor: grabbing; }
         .badge-item { 
             min-width: 80px; text-align: center; font-size: 10px; 
-            scroll-snap-align: start; 
-            flex-shrink: 0;
+            scroll-snap-align: start; flex: 0 0 auto;
         }
         .badge-icon { width: 60px; height: 60px; background: #e0f2fe; border-radius: 50%; margin: 0 auto 5px; display: flex; justify-content: center; align-items: center; font-size: 24px; color: #0284c7; }
         
         /* MODALS */
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3500; display: none; justify-content: center; align-items: center; flex-direction: column; }
-        .modal-box { background: white; width: 85%; max-width: 400px; padding: 25px; border-radius: 25px; text-align: center; animation: popUp 0.3s ease; }
+        .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3500; display: none; justify-content: center; align-items: center; flex-direction: column; }
+        .modal-box { background: white; width: 85%; padding: 25px; border-radius: 25px; text-align: center; animation: popUp 0.3s ease; }
         @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .btn-confirm { background: var(--primary); color: white; padding: 12px; border-radius: 12px; width: 100%; border: none; font-weight: bold; margin-top: 10px; cursor: pointer;}
         .btn-cancel { background: #f3f4f6; color: #666; padding: 12px; border-radius: 12px; width: 100%; border: none; font-weight: bold; margin-top: 10px; cursor: pointer;}
         .btn-error { background: var(--danger); color: white; padding: 12px; border-radius: 12px; width: 100%; border: none; font-weight: bold; margin-top: 10px; cursor: pointer;}
         
         /* NAV */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: var(--white); display: flex; justify-content: space-around; align-items: center; border-top-left-radius: 25px; border-top-right-radius: 25px; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); z-index: 1000; max-width: 100%; }
+        .bottom-nav { 
+            position: absolute; bottom: 0; width: 100%; height: 75px; 
+            background: var(--white); display: flex; justify-content: space-around; align-items: center; 
+            border-top-left-radius: 25px; border-top-right-radius: 25px; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); 
+            z-index: 1000; 
+            padding-bottom: env(safe-area-inset-bottom); /* Safe area for iPhone home bar */
+            height: calc(75px + env(safe-area-inset-bottom));
+        }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #9ca3af; font-size: 10px; gap: 4px; cursor: pointer; transition: 0.3s; }
         .nav-item.active { color: var(--primary); transform: translateY(-5px); }
         .nav-fab { background: var(--primary); width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 24px; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4); transform: translateY(-25px); border: 5px solid var(--bg-light); cursor: pointer; }
@@ -177,8 +195,8 @@
         <h1 style="font-weight: 700; margin-bottom: 5px; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">ADAPTA-NATION</h1>
         <p style="opacity: 0.9; margin-bottom: 40px; font-size: 20px; font-weight: 500;"> From Apathy To Action</p>
         
-        <input type="text" placeholder="Email" class="login-input">
-        <input type="password" placeholder="Password" class="login-input">
+        <input type="text" placeholder="Email" class="login-input" value="rian@adapta.id">
+        <input type="password" placeholder="Password" class="login-input" value="123456">
         
         <button class="login-btn" onclick="doLogin()">Masuk Sekarang</button>
         <button class="btn-outline-white" onclick="navTo('register')">Daftar Akun Baru</button>
@@ -187,7 +205,7 @@
     </div>
 
     <div id="register" class="screen login-bg" style="z-index: 3000;">
-        <div style="width:100%; max-width:400px; text-align:left; margin-bottom:20px;">
+        <div style="width:100%; text-align:left; margin-bottom:20px; padding:0 20px;">
             <i class="fas fa-arrow-left" style="font-size:24px; cursor:pointer;" onclick="navTo('login')"></i>
         </div>
         <h2 style="margin-bottom: 20px;">Buat Akun</h2>
@@ -206,18 +224,16 @@
                 <div class="user-info"><p>Halo Adaptans,</p><h2 id="home-username">Arifatu Dzikra</h2></div>
                 <div class="coin-badge" onclick="navTo('market')"><i class="fas fa-coins" style="color: #fbbf24;"></i><span id="coin-display">1.250</span></div>
             </div>
-            <div class="content-wrapper" style="margin-top:20px;">
-                <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 15px;">
-                    <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
-                        <span id="user-level-display">Level 5: Penjaga Sungai</span><span id="xp-text-home">75%</span>
-                    </div>
-                    <div style="width: 100%; height: 6px; background: rgba(0,0,0,0.2); border-radius: 10px; overflow:hidden;">
-                        <div id="xp-bar-home" style="width: 75%; height: 100%; background: #fbbf24; border-radius: 10px; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);"></div>
-                    </div>
+            <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 15px; margin-top: 20px;">
+                <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
+                    <span id="user-level-display">Level 5: Penjaga Sungai</span><span id="xp-text-home">75%</span>
+                </div>
+                <div style="width: 100%; height: 6px; background: rgba(0,0,0,0.2); border-radius: 10px; overflow:hidden;">
+                    <div id="xp-bar-home" style="width: 75%; height: 100%; background: #fbbf24; border-radius: 10px; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);"></div>
                 </div>
             </div>
         </div>
-        <div class="content-wrapper" style="padding-top: 20px;">
+        <div style="padding-top: 20px;">
             <h3 style="margin: 0 20px 15px; font-size: 18px;">Menu Utama</h3>
             <div class="action-grid">
                 <div class="action-btn" onclick="openMapSelection()"><i class="fas fa-map-location-dot"></i><h4>Peta Misi</h4><p style="font-size: 10px; color: #888;">Cari Area Rawan</p></div>
@@ -233,60 +249,45 @@
     </div>
 
     <div id="map-select" class="screen">
-        <div class="header" style="padding-bottom: 20px;"><div class="content-wrapper" style="display:flex; align-items:center;"><i class="fas fa-arrow-left back-btn" onclick="navTo('home')"></i><h2>Pilih Provinsi</h2></div></div>
-        <div class="content-wrapper" style="padding: 10px 0;">
-            <div id="province-list-container"></div>
-        </div>
+        <div class="header" style="padding-bottom: 20px;"><div style="display:flex; align-items:center;"><i class="fas fa-arrow-left back-btn" onclick="navTo('home')"></i><h2>Pilih Provinsi</h2></div></div>
+        <div style="padding: 10px 0; height: 100%; overflow-y: scroll;" id="province-list-container"></div>
     </div>
     <div id="city-select" class="screen">
-        <div class="header" style="padding-bottom: 20px; background: linear-gradient(135deg, #059669, #047857);"><div class="content-wrapper" style="display:flex; align-items:center;"><i class="fas fa-arrow-left back-btn" onclick="navTo('map-select')"></i><h2 id="province-title">Provinsi</h2></div></div>
-        <div class="content-wrapper" style="padding: 10px 0;">
-            <div id="city-list"></div>
-        </div>
+        <div class="header" style="padding-bottom: 20px; background: linear-gradient(135deg, #059669, #047857);"><div style="display:flex; align-items:center;"><i class="fas fa-arrow-left back-btn" onclick="navTo('map-select')"></i><h2 id="province-title">Provinsi</h2></div></div>
+        <div id="city-list" style="padding: 10px 0; overflow-y: scroll;"></div>
     </div>
     <div id="map-view" class="screen" style="padding-bottom: 0;">
-        <div class="header" style="padding: 15px 20px; position:absolute; top:0; left:0; width:100%; z-index:1000; height: 80px;"><div class="content-wrapper" style="display:flex; align-items:center; justify-content:space-between;"><i class="fas fa-arrow-left back-btn" onclick="navTo('city-select')"></i><h3 id="map-city-name" style="font-size:14px; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Peta</h3></div></div>
+        <div class="header" style="padding: 15px 20px; position:absolute; top:0; left:0; width:100%; z-index:1000; height: 80px;"><div style="display:flex; align-items:center; justify-content:space-between;"><i class="fas fa-arrow-left back-btn" onclick="navTo('city-select')"></i><h3 id="map-city-name" style="font-size:14px; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Peta</h3></div></div>
         <div id="map-container-real"></div>
         <button class="action-btn" style="position:absolute; bottom:90px; left:50%; transform:translateX(-50%); width:80%; max-width:400px; background:var(--primary); color:white; border:none; z-index:1000; box-shadow: 0 5px 15px rgba(0,0,0,0.3);" onclick="navTo('scan')"><i class="fas fa-camera" style="font-size:18px; margin:0 5px 0 0; color:white;"></i> Lapor di Lokasi Ini</button>
     </div>
 
     <div id="rank" class="screen">
         <div class="header" style="border-radius: 0 0 25px 25px;"><h2 style="text-align: center;">Leaderboard</h2><p style="text-align: center; font-size: 12px; opacity: 0.8;">Kota Padang - Minggu Ini</p></div>
-        <div class="content-wrapper">
-            <div class="rank-list" id="rank-list-container" style="padding-top: 20px;"></div>
-        </div>
+        <div class="rank-list" id="rank-list-container" style="padding-top: 20px;">
+            </div>
     </div>
 
     <div id="market" class="screen">
-        <div class="header">
-            <div class="content-wrapper">
-                <h2>Marketplace</h2><div style="display:flex; justify-content:space-between; margin-top:10px;"><span style="font-size:12px; opacity:0.9;">Saldo: <b id="market-balance-display">1.250 GC</b></span><span style="font-size:12px; text-decoration: underline; cursor: pointer;" onclick="openHistory()">Riwayat</span></div>
-            </div>
+        <div class="header"><h2>Marketplace</h2><div style="display:flex; justify-content:space-between; margin-top:10px;"><span style="font-size:12px; opacity:0.9;">Saldo: <b id="market-balance-display">1.250 GC</b></span><span style="font-size:12px; text-decoration: underline; cursor: pointer;" onclick="openHistory()">Riwayat</span></div></div>
+        <div class="category-scroll">
+            <span class="cat-pill active" onclick="filterMarket('all', this)">Semua</span><span class="cat-pill" onclick="filterMarket('pulsa', this)">Pulsa & Data</span><span class="cat-pill" onclick="filterMarket('wallet', this)">E-Wallet</span><span class="cat-pill" onclick="filterMarket('umkm', this)">Produk Eco</span><span class="cat-pill" onclick="filterMarket('donasi', this)">Donasi</span><span class="cat-pill" onclick="filterMarket('promo', this)">Promo Spesial</span><span class="cat-pill" onclick="filterMarket('voucher', this)">Voucher Game</span>
         </div>
-        <div class="content-wrapper">
-            <div class="category-scroll">
-                <span class="cat-pill active" onclick="filterMarket('all', this)">Semua</span><span class="cat-pill" onclick="filterMarket('pulsa', this)">Pulsa & Data</span><span class="cat-pill" onclick="filterMarket('wallet', this)">E-Wallet</span><span class="cat-pill" onclick="filterMarket('umkm', this)">Produk Eco</span><span class="cat-pill" onclick="filterMarket('donasi', this)">Donasi</span><span class="cat-pill" onclick="filterMarket('promo', this)">Promo Spesial</span><span class="cat-pill" onclick="filterMarket('voucher', this)">Voucher Game</span>
-            </div>
-            <div class="market-grid" id="market-items"></div>
-        </div>
+        <div class="market-grid" id="market-items"></div>
     </div>
 
     <div id="profile" class="screen">
         <div class="profile-header">
-            <div class="content-wrapper">
-                <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Rian&gender=male" class="profile-pic"><h2 id="profile-username">Arifatu Dzikra</h2><p style="color:#666; font-size:12px;">Bergabung sejak 2025</p>
-                <div style="display:flex; justify-content:center; gap:20px; margin-top:15px;"><div style="text-align:center;"><b style="font-size:18px; color:var(--primary);" id="stat-mission-profile">12</b><div style="font-size:10px; color:#888;">Misi</div></div><div style="text-align:center;"><b style="font-size:18px; color:var(--accent);" id="profile-coin-display">1.2k</b><div style="font-size:10px; color:#888;">Koin</div></div><div style="text-align:center;"><b style="font-size:18px; color:#333;" id="profile-rank-display">#4</b><div style="font-size:10px; color:#888;">Rank</div></div></div>
-            </div>
+            <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Rian&gender=male" class="profile-pic"><h2 id="profile-username">Arifatu Dzikra</h2><p style="color:#666; font-size:12px;">Bergabung sejak 2025</p>
+            <div style="display:flex; justify-content:center; gap:20px; margin-top:15px;"><div style="text-align:center;"><b style="font-size:18px; color:var(--primary);" id="stat-mission-profile">12</b><div style="font-size:10px; color:#888;">Misi</div></div><div style="text-align:center;"><b style="font-size:18px; color:var(--accent);" id="profile-coin-display">1.2k</b><div style="font-size:10px; color:#888;">Koin</div></div><div style="text-align:center;"><b style="font-size:18px; color:#333;" id="profile-rank-display">#4</b><div style="font-size:10px; color:#888;">Rank</div></div></div>
         </div>
-        <div class="content-wrapper">
-            <h3 style="margin:0 20px 10px; font-size:14px;">Koleksi Badge</h3>
-            <div class="badges-scroll">
-                <div class="badge-item"><div class="badge-icon"><i class="fas fa-water"></i></div><span>Penjaga Sungai</span></div><div class="badge-item"><div class="badge-icon" style="background:#fef3c7; color:#d97706;"><i class="fas fa-recycle"></i></div><span>Adaptans Pilah</span></div><div class="badge-item"><div class="badge-icon" style="background:#fce7f3; color:#db2777;"><i class="fas fa-heart"></i></div><span>Peduli Sesama</span></div><div class="badge-item"><div class="badge-icon" style="background:#e5e7eb; color:#666;"><i class="fas fa-lock"></i></div><span>Terkunci</span></div><div class="badge-item"><div class="badge-icon" style="background:#e5e7eb; color:#666;"><i class="fas fa-lock"></i></div><span>Terkunci</span></div><div class="badge-item"><div class="badge-icon" style="background:#e5e7eb; color:#666;"><i class="fas fa-lock"></i></div><span>Terkunci</span></div><div class="badge-item"><div class="badge-icon" style="background:#e5e7eb; color:#666;"><i class="fas fa-lock"></i></div><span>Terkunci</span></div>
-            </div>
-            <h3 style="margin:20px 20px 10px; font-size:14px;">Riwayat Aksi</h3>
-            <div style="padding:0 20px;" id="profile-action-history"></div>
-            <button class="action-btn" style="margin: 20px; width:calc(100% - 40px); background:#fee2e2; border:none; color:#ef4444;" onclick="doLogout()"><i class="fas fa-sign-out-alt" style="font-size:16px; margin:0;"></i> Logout</button>
+        <h3 style="margin:0 20px 10px; font-size:14px;">Koleksi Badge</h3>
+        <div class="badges-scroll">
+            <div class="badge-item"><div class="badge-icon"><i class="fas fa-water"></i></div><span>Penjaga Sungai</span></div><div class="badge-item"><div class="badge-icon" style="background:#fef3c7; color:#d97706;"><i class="fas fa-recycle"></i></div><span>Adaptans Pilah</span></div><div class="badge-item"><div class="badge-icon" style="background:#fce7f3; color:#db2777;"><i class="fas fa-heart"></i></div><span>Peduli Sesama</span></div><div class="badge-item"><div class="badge-icon" style="background:#e5e7eb; color:#666;"><i class="fas fa-lock"></i></div><span>Terkunci</span></div><div class="badge-item"><div class="badge-icon" style="background:#e5e7eb; color:#666;"><i class="fas fa-lock"></i></div><span>Terkunci</span></div><div class="badge-item"><div class="badge-icon" style="background:#e5e7eb; color:#666;"><i class="fas fa-lock"></i></div><span>Terkunci</span></div><div class="badge-item"><div class="badge-icon" style="background:#e5e7eb; color:#666;"><i class="fas fa-lock"></i></div><span>Terkunci</span></div>
         </div>
+        <h3 style="margin:20px 20px 10px; font-size:14px;">Riwayat Aksi</h3>
+        <div style="padding:0 20px;" id="profile-action-history"></div>
+        <button class="action-btn" style="margin: 20px; width:calc(100% - 40px); background:#fee2e2; border:none; color:#ef4444;" onclick="doLogout()"><i class="fas fa-sign-out-alt" style="font-size:16px; margin:0;"></i> Logout</button>
     </div>
 
     <div id="scan" class="screen" style="background: black;">
@@ -668,3 +669,4 @@ function claimReward() {
 </body>
 
 </html>
+}
