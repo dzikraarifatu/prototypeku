@@ -3,19 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ADAPTA-NATION AI Powered</title>
+    <title>ADAPTA-NATION Responsive</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
     
     <style>
         :root { --primary: #10b981; --primary-dark: #047857; --accent: #f59e0b; --bg-light: #f3f4f6; --white: #ffffff; --text-dark: #1f2937; --danger: #ef4444; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; user-select: none; }
-        body { background: #e5e7eb; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .app-container { width: 390px; height: 844px; background: var(--bg-light); border-radius: 40px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); position: relative; overflow: hidden; border: 8px solid #333; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
+        
+        /* === PERUBAHAN UTAMA: BODY & CONTAINER FULL SCREEN === */
+        body { 
+            background: var(--bg-light); 
+            height: 100vh; 
+            width: 100vw; 
+            overflow: hidden; /* Mencegah scroll pada body utama */
+        }
+        
+        .app-container { 
+            width: 100%; 
+            height: 100%; 
+            background: var(--bg-light); 
+            position: relative; 
+            overflow: hidden; 
+            border: none; /* HAPUS BORDER */
+            border-radius: 0; /* HAPUS RADIUS */
+            box-shadow: none; /* HAPUS SHADOW */
+            max-width: 100%; /* Full width */
+        }
+
+        /* Responsive Layout untuk Desktop/Laptop */
+        @media (min-width: 768px) {
+            .app-container {
+                /* Opsional: Jika ingin membatasi lebar konten di tengah pada layar sangat lebar */
+                /* max-width: 600px; margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.1); */
+            }
+            /* Grid menu jadi 4 kolom di layar lebar */
+            .action-grid { grid-template-columns: repeat(4, 1fr) !important; }
+            /* Market jadi lebih banyak kolom */
+            .market-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important; }
+        }
         
         /* LOGIN & REGISTER STYLES */
         .login-bg { 
@@ -25,30 +53,36 @@
             z-index: 3000;
         }
         .login-logo { font-size: 80px; margin-bottom: 10px; animation: float 3s infinite ease-in-out; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); }
+        /* Input dibatasi lebarnya di desktop agar tidak kepanjangan */
         .login-input { 
-            width: 100%; padding: 15px; margin: 10px 0; border-radius: 15px; border: none; 
+            width: 100%; max-width: 400px; /* Max width for desktop */
+            padding: 15px; margin: 10px 0; border-radius: 15px; border: none; 
             background: rgba(255,255,255,0.15); color: white; backdrop-filter: blur(5px); outline: none; 
             border: 1px solid rgba(255,255,255,0.5); font-weight: 500;
         }
         .login-input::placeholder { color: rgba(255,255,255,0.8); }
         .login-btn { 
-            background: var(--accent); color: white; width: 100%; padding: 15px; border-radius: 15px; 
+            background: var(--accent); color: white; width: 100%; max-width: 400px;
+            padding: 15px; border-radius: 15px; 
             border: none; font-weight: bold; font-size: 16px; margin-top: 20px; cursor: pointer; 
             box-shadow: 0 4px 15px rgba(245, 158, 11, 0.6); transition: 0.3s; 
         }
         .login-btn:active { transform: scale(0.98); }
-        .btn-outline-white { background: transparent; border: 2px solid rgba(255,255,255,0.9); color: white; width: 100%; padding: 15px; border-radius: 15px; font-weight: bold; margin-top: 10px; cursor: pointer; transition: 0.3s;}
+        .btn-outline-white { background: transparent; border: 2px solid rgba(255,255,255,0.9); color: white; width: 100%; max-width: 400px; padding: 15px; border-radius: 15px; font-weight: bold; margin-top: 10px; cursor: pointer; transition: 0.3s;}
         .btn-outline-white:hover { background: rgba(255,255,255,0.2); }
 
         @keyframes float { 0% { transform: translateY(0px) scale(1); } 50% { transform: translateY(-15px) scale(1.05); } 100% { transform: translateY(0px) scale(1); } }
 
         /* HEADER */
         .header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); padding: 40px 20px 25px; color: white; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); position: relative; z-index: 10; }
-        .header-top { display: flex; justify-content: space-between; align-items: center; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; max-width: 1000px; margin: 0 auto; width: 100%; }
         .coin-badge { background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 20px; display: flex; align-items: center; gap: 5px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.3); cursor: pointer; }
         
+        /* CONTENT WRAPPER UNTUK LAYAR LEBAR */
+        .content-wrapper { max-width: 1000px; margin: 0 auto; width: 100%; }
+
         /* SCREENS & SCROLLING */
-        .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-light); display: none; flex-direction: column; overflow-y: auto; padding-bottom: 120px; }
+        .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-light); display: none; flex-direction: column; overflow-y: auto; padding-bottom: 90px; }
         .screen.active { display: flex; animation: slideUp 0.3s cubic-bezier(0.165, 0.84, 0.44, 1); }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
@@ -75,6 +109,7 @@
         .category-scroll { 
             display:flex; gap:10px; overflow-x:auto; padding: 10px 20px; 
             scrollbar-width: none;
+            width: 100%; max-width: 1000px; margin: 0 auto;
         }
         .category-scroll::-webkit-scrollbar { display: none; }
         
@@ -106,6 +141,7 @@
             display: flex; gap: 15px; overflow-x: auto; padding: 15px 20px; 
             scrollbar-width: none; scroll-snap-type: x mandatory; 
             padding-right: 20px; 
+            max-width: 1000px; margin: 0 auto;
         }
         .badge-item { 
             min-width: 80px; text-align: center; font-size: 10px; 
@@ -115,30 +151,20 @@
         .badge-icon { width: 60px; height: 60px; background: #e0f2fe; border-radius: 50%; margin: 0 auto 5px; display: flex; justify-content: center; align-items: center; font-size: 24px; color: #0284c7; }
         
         /* MODALS */
-        .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3500; display: none; justify-content: center; align-items: center; flex-direction: column; }
-        .modal-box { background: white; width: 85%; padding: 25px; border-radius: 25px; text-align: center; animation: popUp 0.3s ease; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3500; display: none; justify-content: center; align-items: center; flex-direction: column; }
+        .modal-box { background: white; width: 85%; max-width: 400px; padding: 25px; border-radius: 25px; text-align: center; animation: popUp 0.3s ease; }
         @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .btn-confirm { background: var(--primary); color: white; padding: 12px; border-radius: 12px; width: 100%; border: none; font-weight: bold; margin-top: 10px; cursor: pointer;}
         .btn-cancel { background: #f3f4f6; color: #666; padding: 12px; border-radius: 12px; width: 100%; border: none; font-weight: bold; margin-top: 10px; cursor: pointer;}
         .btn-error { background: var(--danger); color: white; padding: 12px; border-radius: 12px; width: 100%; border: none; font-weight: bold; margin-top: 10px; cursor: pointer;}
         
         /* NAV */
-        .bottom-nav { position: absolute; bottom: 0; width: 100%; height: 75px; background: var(--white); display: flex; justify-content: space-around; align-items: center; border-top-left-radius: 25px; border-top-right-radius: 25px; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); z-index: 1000; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: var(--white); display: flex; justify-content: space-around; align-items: center; border-top-left-radius: 25px; border-top-right-radius: 25px; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); z-index: 1000; max-width: 100%; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #9ca3af; font-size: 10px; gap: 4px; cursor: pointer; transition: 0.3s; }
         .nav-item.active { color: var(--primary); transform: translateY(-5px); }
         .nav-fab { background: var(--primary); width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 24px; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4); transform: translateY(-25px); border: 5px solid var(--bg-light); cursor: pointer; }
         .back-btn { cursor: pointer; margin-right: 15px; font-size: 18px; }
         
-        /* CAMERA STYLE UPDATES */
-        #camera-feed-container {
-            position: absolute; width: 100%; height: 100%;
-            display: flex; justify-content: center; align-items: center;
-            background: #000;
-        }
-        video { width: 100%; height: 100%; object-fit: cover; }
-        #camera-canvas { display: none; }
-        #captured-image { position: absolute; width: 100%; height: 100%; object-fit: cover; display: none; z-index: 10; }
-
         @keyframes scanLine { 0% {top:0;} 100% {top:100%;} }
     </style>
 </head>
@@ -151,8 +177,8 @@
         <h1 style="font-weight: 700; margin-bottom: 5px; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">ADAPTA-NATION</h1>
         <p style="opacity: 0.9; margin-bottom: 40px; font-size: 20px; font-weight: 500;"> From Apathy To Action</p>
         
-        <input type="text" placeholder="Email" class="login-input" value="rian@adapta.id">
-        <input type="password" placeholder="Password" class="login-input" value="123456">
+        <input type="text" placeholder="Email" class="login-input">
+        <input type="password" placeholder="Password" class="login-input">
         
         <button class="login-btn" onclick="doLogin()">Masuk Sekarang</button>
         <button class="btn-outline-white" onclick="navTo('register')">Daftar Akun Baru</button>
@@ -161,14 +187,16 @@
     </div>
 
     <div id="register" class="screen login-bg" style="z-index: 3000;">
-        <div style="width:100%; text-align:left; margin-bottom:20px;">
+        <div style="width:100%; max-width:400px; text-align:left; margin-bottom:20px;">
             <i class="fas fa-arrow-left" style="font-size:24px; cursor:pointer;" onclick="navTo('login')"></i>
         </div>
         <h2 style="margin-bottom: 20px;">Buat Akun</h2>
+        
         <input type="text" id="reg-name" placeholder="Nama Lengkap" class="login-input">
         <input type="email" placeholder="Email" class="login-input">
         <input type="password" placeholder="Password" class="login-input">
         <input type="password" placeholder="Konfirmasi Password" class="login-input">
+        
         <button class="login-btn" onclick="doRegisterSubmit()">Daftar Sekarang</button>
     </div>
 
@@ -178,16 +206,18 @@
                 <div class="user-info"><p>Halo Adaptans,</p><h2 id="home-username">Arifatu Dzikra</h2></div>
                 <div class="coin-badge" onclick="navTo('market')"><i class="fas fa-coins" style="color: #fbbf24;"></i><span id="coin-display">1.250</span></div>
             </div>
-            <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 15px; margin-top: 20px;">
-                <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
-                    <span id="user-level-display">Level 5: Penjaga Sungai</span><span id="xp-text-home">75%</span>
-                </div>
-                <div style="width: 100%; height: 6px; background: rgba(0,0,0,0.2); border-radius: 10px; overflow:hidden;">
-                    <div id="xp-bar-home" style="width: 75%; height: 100%; background: #fbbf24; border-radius: 10px; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+            <div class="content-wrapper" style="margin-top:20px;">
+                <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 15px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
+                        <span id="user-level-display">Level 5: Penjaga Sungai</span><span id="xp-text-home">75%</span>
+                    </div>
+                    <div style="width: 100%; height: 6px; background: rgba(0,0,0,0.2); border-radius: 10px; overflow:hidden;">
+                        <div id="xp-bar-home" style="width: 75%; height: 100%; background: #fbbf24; border-radius: 10px; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div style="padding-top: 20px;">
+        <div class="content-wrapper" style="padding-top: 20px;">
             <h3 style="margin: 0 20px 15px; font-size: 18px;">Menu Utama</h3>
             <div class="action-grid">
                 <div class="action-btn" onclick="openMapSelection()"><i class="fas fa-map-location-dot"></i><h4>Peta Misi</h4><p style="font-size: 10px; color: #888;">Cari Area Rawan</p></div>
@@ -203,61 +233,69 @@
     </div>
 
     <div id="map-select" class="screen">
-        <div class="header" style="padding-bottom: 20px;"><div style="display:flex; align-items:center;"><i class="fas fa-arrow-left back-btn" onclick="navTo('home')"></i><h2>Pilih Provinsi</h2></div></div>
-        <div style="padding: 10px 0; height: 100%; overflow-y: scroll;" id="province-list-container"></div>
+        <div class="header" style="padding-bottom: 20px;"><div class="content-wrapper" style="display:flex; align-items:center;"><i class="fas fa-arrow-left back-btn" onclick="navTo('home')"></i><h2>Pilih Provinsi</h2></div></div>
+        <div class="content-wrapper" style="padding: 10px 0;">
+            <div id="province-list-container"></div>
+        </div>
     </div>
     <div id="city-select" class="screen">
-        <div class="header" style="padding-bottom: 20px; background: linear-gradient(135deg, #059669, #047857);"><div style="display:flex; align-items:center;"><i class="fas fa-arrow-left back-btn" onclick="navTo('map-select')"></i><h2 id="province-title">Provinsi</h2></div></div>
-        <div id="city-list" style="padding: 10px 0; overflow-y: scroll;"></div>
+        <div class="header" style="padding-bottom: 20px; background: linear-gradient(135deg, #059669, #047857);"><div class="content-wrapper" style="display:flex; align-items:center;"><i class="fas fa-arrow-left back-btn" onclick="navTo('map-select')"></i><h2 id="province-title">Provinsi</h2></div></div>
+        <div class="content-wrapper" style="padding: 10px 0;">
+            <div id="city-list"></div>
+        </div>
     </div>
     <div id="map-view" class="screen" style="padding-bottom: 0;">
-        <div class="header" style="padding: 15px 20px; position:absolute; top:0; left:0; width:100%; z-index:1000; height: 80px;"><div style="display:flex; align-items:center; justify-content:space-between;"><i class="fas fa-arrow-left back-btn" onclick="navTo('city-select')"></i><h3 id="map-city-name" style="font-size:14px; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Peta</h3></div></div>
+        <div class="header" style="padding: 15px 20px; position:absolute; top:0; left:0; width:100%; z-index:1000; height: 80px;"><div class="content-wrapper" style="display:flex; align-items:center; justify-content:space-between;"><i class="fas fa-arrow-left back-btn" onclick="navTo('city-select')"></i><h3 id="map-city-name" style="font-size:14px; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Peta</h3></div></div>
         <div id="map-container-real"></div>
-        <button class="action-btn" style="position:absolute; bottom:90px; left:50%; transform:translateX(-50%); width:80%; background:var(--primary); color:white; border:none; z-index:1000; box-shadow: 0 5px 15px rgba(0,0,0,0.3);" onclick="navTo('scan')"><i class="fas fa-camera" style="font-size:18px; margin:0 5px 0 0; color:white;"></i> Lapor di Lokasi Ini</button>
+        <button class="action-btn" style="position:absolute; bottom:90px; left:50%; transform:translateX(-50%); width:80%; max-width:400px; background:var(--primary); color:white; border:none; z-index:1000; box-shadow: 0 5px 15px rgba(0,0,0,0.3);" onclick="navTo('scan')"><i class="fas fa-camera" style="font-size:18px; margin:0 5px 0 0; color:white;"></i> Lapor di Lokasi Ini</button>
     </div>
 
     <div id="rank" class="screen">
         <div class="header" style="border-radius: 0 0 25px 25px;"><h2 style="text-align: center;">Leaderboard</h2><p style="text-align: center; font-size: 12px; opacity: 0.8;">Kota Padang - Minggu Ini</p></div>
-        <div class="rank-list" id="rank-list-container" style="padding-top: 20px;"></div>
+        <div class="content-wrapper">
+            <div class="rank-list" id="rank-list-container" style="padding-top: 20px;"></div>
+        </div>
     </div>
 
     <div id="market" class="screen">
-        <div class="header"><h2>Marketplace</h2><div style="display:flex; justify-content:space-between; margin-top:10px;"><span style="font-size:12px; opacity:0.9;">Saldo: <b id="market-balance-display">1.250 GC</b></span><span style="font-size:12px; text-decoration: underline; cursor: pointer;" onclick="openHistory()">Riwayat</span></div></div>
-        <div class="category-scroll">
-            <span class="cat-pill active" onclick="filterMarket('all', this)">Semua</span><span class="cat-pill" onclick="filterMarket('pulsa', this)">Pulsa & Data</span><span class="cat-pill" onclick="filterMarket('wallet', this)">E-Wallet</span><span class="cat-pill" onclick="filterMarket('umkm', this)">Produk Eco</span><span class="cat-pill" onclick="filterMarket('donasi', this)">Donasi</span><span class="cat-pill" onclick="filterMarket('promo', this)">Promo Spesial</span><span class="cat-pill" onclick="filterMarket('voucher', this)">Voucher Game</span>
+        <div class="header">
+            <div class="content-wrapper">
+                <h2>Marketplace</h2><div style="display:flex; justify-content:space-between; margin-top:10px;"><span style="font-size:12px; opacity:0.9;">Saldo: <b id="market-balance-display">1.250 GC</b></span><span style="font-size:12px; text-decoration: underline; cursor: pointer;" onclick="openHistory()">Riwayat</span></div>
+            </div>
         </div>
-        <div class="market-grid" id="market-items"></div>
+        <div class="content-wrapper">
+            <div class="category-scroll">
+                <span class="cat-pill active" onclick="filterMarket('all', this)">Semua</span><span class="cat-pill" onclick="filterMarket('pulsa', this)">Pulsa & Data</span><span class="cat-pill" onclick="filterMarket('wallet', this)">E-Wallet</span><span class="cat-pill" onclick="filterMarket('umkm', this)">Produk Eco</span><span class="cat-pill" onclick="filterMarket('donasi', this)">Donasi</span><span class="cat-pill" onclick="filterMarket('promo', this)">Promo Spesial</span><span class="cat-pill" onclick="filterMarket('voucher', this)">Voucher Game</span>
+            </div>
+            <div class="market-grid" id="market-items"></div>
+        </div>
     </div>
 
     <div id="profile" class="screen">
         <div class="profile-header">
-            <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Rian&gender=male" class="profile-pic"><h2 id="profile-username">Arifatu Dzikra</h2><p style="color:#666; font-size:12px;">Bergabung sejak 2025</p>
-            <div style="display:flex; justify-content:center; gap:20px; margin-top:15px;"><div style="text-align:center;"><b style="font-size:18px; color:var(--primary);" id="stat-mission-profile">12</b><div style="font-size:10px; color:#888;">Misi</div></div><div style="text-align:center;"><b style="font-size:18px; color:var(--accent);" id="profile-coin-display">1.2k</b><div style="font-size:10px; color:#888;">Koin</div></div><div style="text-align:center;"><b style="font-size:18px; color:#333;" id="profile-rank-display">#4</b><div style="font-size:10px; color:#888;">Rank</div></div></div>
+            <div class="content-wrapper">
+                <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Rian&gender=male" class="profile-pic"><h2 id="profile-username">Arifatu Dzikra</h2><p style="color:#666; font-size:12px;">Bergabung sejak 2025</p>
+                <div style="display:flex; justify-content:center; gap:20px; margin-top:15px;"><div style="text-align:center;"><b style="font-size:18px; color:var(--primary);" id="stat-mission-profile">12</b><div style="font-size:10px; color:#888;">Misi</div></div><div style="text-align:center;"><b style="font-size:18px; color:var(--accent);" id="profile-coin-display">1.2k</b><div style="font-size:10px; color:#888;">Koin</div></div><div style="text-align:center;"><b style="font-size:18px; color:#333;" id="profile-rank-display">#4</b><div style="font-size:10px; color:#888;">Rank</div></div></div>
+            </div>
         </div>
-        <h3 style="margin:0 20px 10px; font-size:14px;">Koleksi Badge</h3>
-        <div class="badges-scroll">
-            <div class="badge-item"><div class="badge-icon"><i class="fas fa-water"></i></div><span>Penjaga Sungai</span></div><div class="badge-item"><div class="badge-icon" style="background:#fef3c7; color:#d97706;"><i class="fas fa-recycle"></i></div><span>Adaptans Pilah</span></div><div class="badge-item"><div class="badge-icon" style="background:#fce7f3; color:#db2777;"><i class="fas fa-heart"></i></div><span>Peduli Sesama</span></div><div class="badge-item"><div class="badge-icon" style="background:#e5e7eb; color:#666;"><i class="fas fa-lock"></i></div><span>Terkunci</span></div><div class="badge-item"><div class="badge-icon" style="background:#e5e7eb; color:#666;"><i class="fas fa-lock"></i></div><span>Terkunci</span></div><div class="badge-item"><div class="badge-icon" style="background:#e5e7eb; color:#666;"><i class="fas fa-lock"></i></div><span>Terkunci</span></div>
+        <div class="content-wrapper">
+            <h3 style="margin:0 20px 10px; font-size:14px;">Koleksi Badge</h3>
+            <div class="badges-scroll">
+                <div class="badge-item"><div class="badge-icon"><i class="fas fa-water"></i></div><span>Penjaga Sungai</span></div><div class="badge-item"><div class="badge-icon" style="background:#fef3c7; color:#d97706;"><i class="fas fa-recycle"></i></div><span>Adaptans Pilah</span></div><div class="badge-item"><div class="badge-icon" style="background:#fce7f3; color:#db2777;"><i class="fas fa-heart"></i></div><span>Peduli Sesama</span></div><div class="badge-item"><div class="badge-icon" style="background:#e5e7eb; color:#666;"><i class="fas fa-lock"></i></div><span>Terkunci</span></div><div class="badge-item"><div class="badge-icon" style="background:#e5e7eb; color:#666;"><i class="fas fa-lock"></i></div><span>Terkunci</span></div><div class="badge-item"><div class="badge-icon" style="background:#e5e7eb; color:#666;"><i class="fas fa-lock"></i></div><span>Terkunci</span></div><div class="badge-item"><div class="badge-icon" style="background:#e5e7eb; color:#666;"><i class="fas fa-lock"></i></div><span>Terkunci</span></div>
+            </div>
+            <h3 style="margin:20px 20px 10px; font-size:14px;">Riwayat Aksi</h3>
+            <div style="padding:0 20px;" id="profile-action-history"></div>
+            <button class="action-btn" style="margin: 20px; width:calc(100% - 40px); background:#fee2e2; border:none; color:#ef4444;" onclick="doLogout()"><i class="fas fa-sign-out-alt" style="font-size:16px; margin:0;"></i> Logout</button>
         </div>
-        <h3 style="margin:20px 20px 10px; font-size:14px;">Riwayat Aksi</h3>
-        <div style="padding:0 20px;" id="profile-action-history"></div>
-        <button class="action-btn" style="margin: 20px; width:calc(100% - 40px); background:#fee2e2; border:none; color:#ef4444;" onclick="doLogout()"><i class="fas fa-sign-out-alt" style="font-size:16px; margin:0;"></i> Logout</button>
     </div>
 
     <div id="scan" class="screen" style="background: black;">
-        <div id="camera-feed-container">
-            <video id="video-feed" autoplay playsinline></video>
-            <canvas id="camera-canvas"></canvas>
-            <img id="captured-image" src="" alt="Captured">
-            <div style="position:absolute; width:100%; height:100%; display:grid; grid-template-columns:1fr 1fr 1fr; grid-template-rows:1fr 1fr 1fr; z-index:5;"><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div></div>
-            <div id="scanning-anim" style="display:none; position:absolute; top:20%; left:10%; width:80%; height:60%; border:3px solid var(--primary); box-shadow:0 0 15px var(--primary); border-radius:10px; overflow:hidden; z-index:20;"><div style="width:100%; height:5px; background:var(--primary); box-shadow:0 0 10px white; position:absolute; animation:scanLine 1.5s infinite;"></div><div style="position:absolute; bottom:10px; left:0; width:100%; text-align:center; color:white; font-weight:bold; text-shadow:0 1px 2px black;">Menganalisis AI...</div></div>
+        <div id="camera-view" style="flex:1; position:relative; display:flex; justify-content:center; align-items:center; overflow:hidden;">
+            <img src="https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?q=80&w=1000&auto=format&fit=crop" style="position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0.6;">
+            <div style="position:absolute; width:100%; height:100%; display:grid; grid-template-columns:1fr 1fr 1fr; grid-template-rows:1fr 1fr 1fr;"><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div><div style="border:1px solid rgba(255,255,255,0.1);"></div></div>
+            <div id="scanning-anim" style="display:none; position:absolute; top:20%; left:10%; width:80%; max-width:400px; height:60%; border:3px solid var(--primary); box-shadow:0 0 15px var(--primary); border-radius:10px; overflow:hidden;"><div style="width:100%; height:5px; background:var(--primary); box-shadow:0 0 10px white; position:absolute; animation:scanLine 1.5s infinite;"></div><div style="position:absolute; bottom:10px; left:0; width:100%; text-align:center; color:white; font-weight:bold; text-shadow:0 1px 2px black;">Menganalisis AI...</div></div>
         </div>
-        <div style="position:absolute; bottom:0; width:100%; height:150px; background:linear-gradient(to top, black, transparent); display:flex; justify-content:space-around; align-items:center; padding:0 20px; z-index:30;">
-            <div onclick="navTo('home')" style="color:white; font-size:12px; cursor:pointer;">Batal</div>
-            <div onclick="takePhoto()" style="width:70px; height:70px; border-radius:50%; border:4px solid white; display:flex; justify-content:center; align-items:center; cursor:pointer; background:rgba(255,255,255,0.2);">
-                <div style="width:60px; height:60px; background:white; border-radius:50%;"></div>
-            </div>
-            <div style="color:white; font-size:24px;"><i class="fas fa-bolt"></i></div>
-        </div>
+        <div style="height:150px; background:black; display:flex; justify-content:space-around; align-items:center; padding:0 20px;"><div onclick="navTo('home')" style="color:white; font-size:12px; cursor:pointer;">Batal</div><div onclick="takePhoto()" style="width:70px; height:70px; border-radius:50%; border:4px solid white; display:flex; justify-content:center; align-items:center; cursor:pointer;"><div style="width:60px; height:60px; background:white; border-radius:50%;"></div></div><div style="color:white; font-size:24px;"><i class="fas fa-bolt"></i></div></div>
     </div>
 
     <div id="register-success-modal" class="modal" style="z-index: 3500;">
@@ -269,24 +307,30 @@
         </div>
     </div>
 
-    <div id="reward-modal" class="modal">
-        <div class="modal-box">
-            <div style="font-size:60px; margin-bottom:10px;">🎉</div>
-            <h2 style="color:var(--primary);">Sampah Terdeteksi!</h2>
-            <p style="font-size:14px; color:#666; margin:10px 0;" id="ai-result-text">Jenis: <b>Menganalisis...</b></p>
-            <div style="background:#fffbeb; padding:15px; border-radius:15px; border:1px solid #fcd34d; margin:15px 0; display:flex; justify-content:space-around;">
-                <div style="font-size:18px; font-weight:bold; color:var(--accent);" id="ai-reward-coin">+ 0 Poin</div>
-                <div style="font-size:18px; font-weight:bold; color:var(--primary);" id="ai-reward-xp">+ 0 XP</div>
-            </div>
-            <button class="btn-confirm" onclick="claimReward()">Klaim Poin & XP</button>
+    <div id="confirm-modal" class="modal">
+        <div class="modal-box"><div style="font-size:40px; margin-bottom:10px;" id="modal-icon">🛒</div><h3 id="modal-title">Konfirmasi</h3><p style="font-size:12px; color:#666; margin:10px 0;" id="modal-desc">...</p><div style="background:#f3f4f6; padding:10px; border-radius:10px; font-size:12px; margin-bottom:10px;">Saldo Sisa: <b style="color:var(--primary);" id="modal-balance">...</b></div><button class="btn-confirm" onclick="processTransaction()">Ya, Tukar Sekarang</button><button class="btn-cancel" onclick="closeModal()">Batal</button></div>
+    </div>
+    <div id="transaction-success-modal" class="modal">
+        <div class="modal-box"><div style="font-size:60px; margin-bottom:10px;">🎉</div><h2 style="color:var(--primary);">Penukaran Berhasil!</h2><p style="font-size:14px; color:#666; margin:10px 0;">Item telah ditambahkan ke inventaris.</p><div style="background:#ecfdf5; padding:15px; border-radius:15px; border:1px solid #10b981; margin:15px 0;"><div style="font-size:18px; font-weight:bold; color:var(--primary);" id="success-item-name">Pulsa 10k</div></div><button class="btn-confirm" onclick="closeSuccessModal()">OK</button></div>
+    </div>
+    <div id="insufficient-modal" class="modal">
+        <div class="modal-box"><div style="font-size:60px; margin-bottom:10px; color:var(--danger);">❌</div><h2 style="color:var(--danger);">Saldo Tidak Cukup</h2><p style="font-size:14px; color:#666; margin:10px 0;">Kumpulkan lebih banyak Green Coin dengan melakukan aksi lingkungan!</p><button class="btn-error" onclick="document.getElementById('insufficient-modal').style.display='none'">Tutup</button></div>
+    </div>
+    <div id="levelup-modal" class="modal" style="z-index: 2500;">
+        <div class="modal-box" style="background: linear-gradient(135deg, #fffbeb, #fff);">
+            <div style="font-size:70px; margin-bottom:10px;">🚀</div>
+            <h2 style="color:var(--accent); font-size: 24px;">LEVEL UP!</h2>
+            <p style="font-size:16px; color:#333; margin:10px 0;">Selamat! Anda naik ke level baru.</p>
+            <div style="background:var(--accent); color:white; padding:15px; border-radius:15px; margin:20px 0; font-weight:bold; font-size: 18px;" id="new-level-name">Level 6</div>
+            <button class="btn-confirm" style="background: var(--accent);" onclick="document.getElementById('levelup-modal').style.display='none'">Lanjutkan Aksi!</button>
         </div>
     </div>
-
-    <div id="confirm-modal" class="modal"><div class="modal-box"><div style="font-size:40px; margin-bottom:10px;" id="modal-icon">🛒</div><h3 id="modal-title">Konfirmasi</h3><p style="font-size:12px; color:#666; margin:10px 0;" id="modal-desc">...</p><div style="background:#f3f4f6; padding:10px; border-radius:10px; font-size:12px; margin-bottom:10px;">Saldo Sisa: <b style="color:var(--primary);" id="modal-balance">...</b></div><button class="btn-confirm" onclick="processTransaction()">Ya, Tukar Sekarang</button><button class="btn-cancel" onclick="closeModal()">Batal</button></div></div>
-    <div id="transaction-success-modal" class="modal"><div class="modal-box"><div style="font-size:60px; margin-bottom:10px;">🎉</div><h2 style="color:var(--primary);">Penukaran Berhasil!</h2><p style="font-size:14px; color:#666; margin:10px 0;">Item telah ditambahkan ke inventaris.</p><div style="background:#ecfdf5; padding:15px; border-radius:15px; border:1px solid #10b981; margin:15px 0;"><div style="font-size:18px; font-weight:bold; color:var(--primary);" id="success-item-name">Pulsa 10k</div></div><button class="btn-confirm" onclick="closeSuccessModal()">OK</button></div></div>
-    <div id="insufficient-modal" class="modal"><div class="modal-box"><div style="font-size:60px; margin-bottom:10px; color:var(--danger);">❌</div><h2 style="color:var(--danger);">Saldo Tidak Cukup</h2><p style="font-size:14px; color:#666; margin:10px 0;">Kumpulkan lebih banyak Green Coin dengan melakukan aksi lingkungan!</p><button class="btn-error" onclick="document.getElementById('insufficient-modal').style.display='none'">Tutup</button></div></div>
-    <div id="levelup-modal" class="modal" style="z-index: 2500;"><div class="modal-box" style="background: linear-gradient(135deg, #fffbeb, #fff);"><div style="font-size:70px; margin-bottom:10px;">🚀</div><h2 style="color:var(--accent); font-size: 24px;">LEVEL UP!</h2><p style="font-size:16px; color:#333; margin:10px 0;">Selamat! Anda naik ke level baru.</p><div style="background:var(--accent); color:white; padding:15px; border-radius:15px; margin:20px 0; font-weight:bold; font-size: 18px;" id="new-level-name">Level 6</div><button class="btn-confirm" style="background: var(--accent);" onclick="document.getElementById('levelup-modal').style.display='none'">Lanjutkan Aksi!</button></div></div>
-    <div id="history-modal" class="modal"><div class="modal-box" style="text-align:left; max-height:60%; overflow-y:auto;"><h3 style="text-align:center; margin-bottom:15px;">Riwayat Transaksi</h3><div id="history-list"><p style="font-size:12px; color:#999; text-align:center;">Belum ada penukaran baru.</p></div><button class="btn-cancel" onclick="document.getElementById('history-modal').style.display='none'">Tutup</button></div></div>
+    <div id="history-modal" class="modal">
+        <div class="modal-box" style="text-align:left; max-height:60%; overflow-y:auto;"><h3 style="text-align:center; margin-bottom:15px;">Riwayat Transaksi</h3><div id="history-list"><p style="font-size:12px; color:#999; text-align:center;">Belum ada penukaran baru.</p></div><button class="btn-cancel" onclick="document.getElementById('history-modal').style.display='none'">Tutup</button></div>
+    </div>
+    <div id="reward-modal" class="modal">
+        <div class="modal-box"><div style="font-size:60px; margin-bottom:10px;">🎉</div><h2 style="color:var(--primary);">Sampah Terdeteksi!</h2><p style="font-size:14px; color:#666; margin:10px 0;">Jenis: <b>Botol Plastik (PET)</b></p><div style="background:#fffbeb; padding:15px; border-radius:15px; border:1px solid #fcd34d; margin:15px 0; display:flex; justify-content:space-around;"><div style="font-size:18px; font-weight:bold; color:var(--accent);">+ 500 Poin</div><div style="font-size:18px; font-weight:bold; color:var(--primary);">+ 1000 XP</div></div><button class="btn-confirm" onclick="claimReward()">Klaim Poin & XP</button></div>
+    </div>
 
     <div id="bottom-nav" class="bottom-nav" style="display:none;">
         <div class="nav-item active" onclick="navTo('home')"><i class="fas fa-home"></i> <span>Home</span></div>
@@ -298,13 +342,21 @@
 </div>
 
 <script>
-// --- GLOBAL VARS ---
 let userBalance = 1250; 
 let userTotalXP = 750; 
 const xpPerLevel = 1000;
 let transactionHistory = [];
-let actionHistoryLog = [ { title: "Pilah Sampah Organik", date: "Hari ini, 10:00", coin: "+500" }, { title: "Lapor Selokan Mampet", date: "Kemarin", coin: "+300" } ];
-let statWaste = 12; let statCO2 = 4; let statMissions = 8;
+let actionHistoryLog = [
+    { title: "Pilah Sampah Organik", date: "Hari ini, 10:00", coin: "+500" },
+    { title: "Lapor Selokan Mampet", date: "Kemarin", coin: "+300" }
+];
+
+// DATA STATISTIK AWAL
+let statWaste = 12; // kg
+let statCO2 = 4; // kg
+let statMissions = 8;
+
+// === DATA LEADERBOARD AWAL (BOTS + USER) ===
 let leaderboardData = [
     { id: 'siti', name: 'Siti Aminah', role: 'Duta Lingkungan', xp: 5200, avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=Siti&gender=female', isUser: false },
     { id: 'budi', name: 'Budi Santoso', role: 'Mahasiswa', xp: 4800, avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=Budi&gender=male', isUser: false },
@@ -312,53 +364,146 @@ let leaderboardData = [
     { id: 'user', name: 'Arifatu Dzikra (Anda)', role: 'Penjaga Sungai', xp: 750, avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=Rian&gender=male', isUser: true }
 ];
 
-// --- AI VARIABLES ---
-let aiModel = null;
-let currentDetectedTrash = "Sampah Residu";
-let currentRewardCoin = 100;
-let currentRewardXP = 50;
-
-// --- LOAD AI MODEL ---
-async function loadAI() {
-    console.log("Memuat Model AI...");
-    try {
-        aiModel = await cocoSsd.load();
-        console.log("Model AI Siap!");
-    } catch (e) {
-        console.log("Gagal memuat AI, menggunakan mode simulasi.");
-    }
-}
-
-window.onload = function() { 
-    renderProvinceList(); renderMarket('all'); updateBalanceUI(); renderActionHistory(); renderLeaderboard(); 
-    document.querySelectorAll('.category-scroll, .badges-scroll').forEach(enableDragScroll);
-    loadAI(); // Start loading AI immediately
+// === DATABASE LENGKAP ===
+const indonesiaMapData = {
+    "Aceh": ["Banda Aceh", "Sabang", "Lhokseumawe", "Langsa", "Subulussalam", "Kab. Aceh Besar", "Kab. Pidie", "Kab. Aceh Utara", "Kab. Aceh Timur"],
+    "Sumatera Utara": ["Medan", "Binjai", "Pematangsiantar", "Tebing Tinggi", "Sibolga", "Tanjungbalai", "Padang Sidempuan", "Gunungsitoli", "Kab. Deli Serdang", "Kab. Karo", "Kab. Langkat"],
+    "Sumatera Barat": ["Padang", "Bukittinggi", "Pariaman", "Solok", "Sawahlunto", "Padang Panjang", "Payakumbuh", "Kab. Agam", "Kab. Solok", "Kab. Tanah Datar", "Kab. Lima Puluh Kota"],
+    "Riau": ["Pekanbaru", "Dumai", "Kab. Kampar", "Kab. Bengkalis", "Kab. Siak", "Kab. Indragiri Hilir"],
+    "Kepulauan Riau": ["Tanjungpinang", "Batam", "Kab. Bintan", "Kab. Karimun", "Kab. Natuna"],
+    "Jambi": ["Jambi", "Sungai Penuh", "Kab. Muaro Jambi", "Kab. Batanghari", "Kab. Kerinci"],
+    "Sumatera Selatan": ["Palembang", "Pagar Alam", "Lubuklinggau", "Prabumulih", "Kab. Ogan Ilir", "Kab. Banyuasin", "Kab. Muara Enim"],
+    "Bangka Belitung": ["Pangkal Pinang", "Kab. Bangka", "Kab. Belitung"],
+    "Bengkulu": ["Bengkulu", "Kab. Rejang Lebong", "Kab. Bengkulu Selatan"],
+    "Lampung": ["Bandar Lampung", "Metro", "Kab. Lampung Selatan", "Kab. Lampung Tengah", "Kab. Pesawaran"],
+    "DKI Jakarta": ["Jakarta Pusat", "Jakarta Selatan", "Jakarta Barat", "Jakarta Timur", "Jakarta Utara", "Kepulauan Seribu"],
+    "Jawa Barat": ["Bandung", "Bogor", "Depok", "Bekasi", "Cirebon", "Sukabumi", "Tasikmalaya", "Cimahi", "Banjar", "Kab. Bandung", "Kab. Bandung Barat", "Kab. Bogor", "Kab. Bekasi", "Kab. Karawang", "Kab. Sukabumi", "Kab. Cianjur", "Kab. Garut", "Kab. Tasikmalaya", "Kab. Ciamis", "Kab. Kuningan", "Kab. Cirebon", "Kab. Majalengka", "Kab. Sumedang", "Kab. Indramayu", "Kab. Subang", "Kab. Purwakarta"],
+    "Banten": ["Serang", "Tangerang", "Cilegon", "Tangerang Selatan", "Kab. Serang", "Kab. Tangerang", "Kab. Lebak", "Kab. Pandeglang"],
+    "Jawa Tengah": ["Semarang", "Surakarta", "Magelang", "Pekalongan", "Salatiga", "Tegal", "Kab. Semarang", "Kab. Kendal", "Kab. Demak", "Kab. Grobogan", "Kab. Boyolali", "Kab. Klaten", "Kab. Sukoharjo", "Kab. Wonogiri", "Kab. Karanganyar", "Kab. Sragen", "Kab. Kudus", "Kab. Jepara", "Kab. Pati", "Kab. Rembang", "Kab. Blora", "Kab. Banyumas", "Kab. Cilacap", "Kab. Purbalingga", "Kab. Banjarnegara", "Kab. Kebumen", "Kab. Purworejo", "Kab. Wonosobo", "Kab. Magelang", "Kab. Temanggung", "Kab. Batang", "Kab. Pekalongan", "Kab. Pemalang", "Kab. Tegal", "Kab. Brebes"],
+    "DI Yogyakarta": ["Yogyakarta", "Kab. Sleman", "Kab. Bantul", "Kab. Kulon Progo", "Kab. Gunungkidul"],
+    "Jawa Timur": ["Surabaya", "Malang", "Madiun", "Kediri", "Mojokerto", "Batu", "Pasuruan", "Probolinggo", "Blitar", "Kab. Sidoarjo", "Kab. Gresik", "Kab. Mojokerto", "Kab. Jombang", "Kab. Bojonegoro", "Kab. Tuban", "Kab. Lamongan", "Kab. Madiun", "Kab. Ngawi", "Kab. Magetan", "Kab. Ponorogo", "Kab. Pacitan", "Kab. Kediri", "Kab. Nganjuk", "Kab. Blitar", "Kab. Tulungagung", "Kab. Trenggalek", "Kab. Malang", "Kab. Pasuruan", "Kab. Probolinggo", "Kab. Lumajang", "Kab. Bondowoso", "Kab. Situbondo", "Kab. Jember", "Kab. Banyuwangi", "Kab. Pamekasan", "Kab. Sampang", "Kab. Sumenep", "Kab. Bangkalan"],
+    "Bali": ["Denpasar", "Kab. Badung", "Kab. Gianyar", "Kab. Tabanan", "Kab. Buleleng (Singaraja)", "Kab. Karangasem", "Kab. Klungkung", "Kab. Bangli", "Kab. Jembrana"],
+    "Nusa Tenggara Barat": ["Mataram", "Bima", "Kab. Lombok Barat", "Kab. Lombok Tengah", "Kab. Lombok Timur", "Kab. Sumbawa"],
+    "Nusa Tenggara Timur": ["Kupang", "Kab. Kupang", "Kab. Timor Tengah Selatan", "Kab. Sikka (Maumere)", "Kab. Ende", "Kab. Manggarai Barat (Labuan Bajo)"],
+    "Kalimantan Barat": ["Pontianak", "Singkawang", "Kab. Kubu Raya", "Kab. Sambas", "Kab. Sintang"],
+    "Kalimantan Tengah": ["Palangkaraya", "Kab. Kotawaringin Timur", "Kab. Kapuas"],
+    "Kalimantan Selatan": ["Banjarmasin", "Banjarbaru", "Kab. Banjar", "Kab. Tanah Laut", "Kab. Tabalong"],
+    "Kalimantan Timur": ["Samarinda", "Balikpapan", "Bontang", "Kab. Kutai Kartanegara", "Kab. Kutai Timur", "Kab. Berau"],
+    "Kalimantan Utara": ["Tarakan", "Kab. Bulungan", "Kab. Nunukan"],
+    "Sulawesi Utara": ["Manado", "Bitung", "Tomohon", "Kotamobagu", "Kab. Minahasa"],
+    "Sulawesi Tengah": ["Palu", "Kab. Donggala", "Kab. Poso", "Kab. Banggai"],
+    "Sulawesi Selatan": ["Makassar", "Parepare", "Palopo", "Kab. Gowa", "Kab. Maros", "Kab. Bone", "Kab. Luwu", "Kab. Tana Toraja"],
+    "Sulawesi Tenggara": ["Kendari", "Bau-Bau", "Kab. Konawe", "Kab. Muna"],
+    "Gorontalo": ["Gorontalo", "Kab. Gorontalo"],
+    "Sulawesi Barat": ["Kab. Mamuju", "Kab. Majene"],
+    "Maluku": ["Ambon", "Tual", "Kab. Maluku Tengah"],
+    "Maluku Utara": ["Ternate", "Tidore Kepulauan", "Kab. Halmahera Utara"],
+    "Papua": ["Jayapura", "Kab. Jayapura", "Kab. Keerom", "Kab. Sarmi"],
+    "Papua Barat": ["Manokwari", "Kab. Fakfak", "Kab. Kaimana"],
+    "Papua Selatan": ["Kab. Merauke", "Kab. Boven Digoel", "Kab. Mappi", "Kab. Asmat"],
+    "Papua Tengah": ["Kab. Nabire", "Kab. Mimika (Timika)", "Kab. Puncak Jaya"],
+    "Papua Pegunungan": ["Kab. Jayawijaya (Wamena)", "Kab. Yahukimo"],
+    "Papua Barat Daya": ["Sorong", "Kab. Sorong", "Kab. Raja Ampat"]
 };
 
-// --- DRAG SCROLL ---
+// === DATABASE KOORDINAT SINKRON LENGKAP ===
+const cityCoordinates = {
+    "Banda Aceh": [5.5483, 95.3238], "Sabang": [5.8953, 95.3175], "Lhokseumawe": [5.1802, 97.1503], "Langsa": [4.4714, 97.9658], "Subulussalam": [2.6394, 98.0044], "Kab. Aceh Besar": [5.3789, 95.5336], "Kab. Pidie": [5.1833, 95.9556], "Kab. Aceh Utara": [4.9755, 97.1601], "Kab. Aceh Timur": [4.6293, 97.6696],
+    "Medan": [3.5952, 98.6722], "Binjai": [3.6042, 98.4842], "Pematangsiantar": [2.9613, 99.0620], "Tebing Tinggi": [3.3283, 99.1625], "Sibolga": [1.7335, 98.7845], "Tanjungbalai": [2.9652, 99.8000], "Padang Sidempuan": [1.3737, 99.2735], "Gunungsitoli": [1.2842, 97.6083], "Kab. Deli Serdang": [3.4988, 98.7180], "Kab. Karo": [3.1075, 98.4952], "Kab. Langkat": [3.7383, 98.2435],
+    "Padang": [-0.9471, 100.4172], "Bukittinggi": [-0.3039, 100.3813], "Pariaman": [-0.6263, 100.1199], "Solok": [-0.7963, 100.6592], "Sawahlunto": [-0.6874, 100.7850], "Padang Panjang": [-0.4712, 100.3983], "Payakumbuh": [-0.2230, 100.6329], "Kab. Agam": [-0.2520, 100.0638], "Kab. Solok": [-0.9708, 100.7588], "Kab. Tanah Datar": [-0.4571, 100.5898], "Kab. Lima Puluh Kota": [-0.0719, 100.5960],
+    "Pekanbaru": [0.5071, 101.4478], "Dumai": [1.6775, 101.4504], "Kab. Kampar": [0.3344, 101.0264], "Kab. Bengkalis": [1.4862, 102.1323], "Kab. Siak": [0.9344, 102.0435], "Kab. Indragiri Hilir": [-0.3323, 103.1610],
+    "Tanjungpinang": [0.9165, 104.4533], "Batam": [1.0457, 104.0246], "Kab. Bintan": [1.1396, 104.4536], "Kab. Karimun": [0.9750, 103.4278], "Kab. Natuna": [3.9455, 108.1504],
+    "Jambi": [-1.6101, 103.6131], "Sungai Penuh": [-2.0620, 101.3824], "Kab. Muaro Jambi": [-1.4729, 103.7377], "Kab. Batanghari": [-1.7562, 103.2504], "Kab. Kerinci": [-1.9806, 101.5562],
+    "Palembang": [-2.9761, 104.7754], "Pagar Alam": [-4.0189, 103.2713], "Lubuklinggau": [-3.2974, 102.8654], "Prabumulih": [-3.4357, 104.2323], "Kab. Ogan Ilir": [-3.4334, 104.6293], "Kab. Banyuasin": [-2.8941, 104.3725], "Kab. Muara Enim": [-3.6554, 103.7757],
+    "Pangkal Pinang": [-2.1311, 106.1161], "Kab. Bangka": [-1.9022, 105.9080], "Kab. Belitung": [-2.8533, 107.7264],
+    "Bengkulu": [-3.8004, 102.2655], "Kab. Rejang Lebong": [-3.4619, 102.5312], "Kab. Bengkulu Selatan": [-4.3487, 103.0271],
+    "Bandar Lampung": [-5.3971, 105.2668], "Metro": [-5.1136, 105.3069], "Kab. Lampung Selatan": [-5.7142, 105.5898], "Kab. Lampung Tengah": [-4.8967, 105.2023], "Kab. Pesawaran": [-5.4285, 105.1093],
+    "Jakarta Pusat": [-6.1751, 106.8650], "Jakarta Selatan": [-6.2615, 106.8106], "Jakarta Barat": [-6.1683, 106.7588], "Jakarta Timur": [-6.2250, 106.9004], "Jakarta Utara": [-6.1384, 106.8646], "Kepulauan Seribu": [-5.6234, 106.5746],
+    "Bandung": [-6.9175, 107.6191], "Bogor": [-6.5971, 106.8060], "Depok": [-6.4025, 106.7942], "Bekasi": [-6.2383, 106.9756], "Cirebon": [-6.7320, 108.5523], "Sukabumi": [-6.9277, 106.9300], "Tasikmalaya": [-7.3274, 108.2207], "Cimahi": [-6.8726, 107.5422], "Banjar": [-7.3746, 108.5348], "Kab. Bandung": [-7.0252, 107.5197], "Kab. Bandung Barat": [-6.8437, 107.5028], "Kab. Bogor": [-6.4789, 106.8247], "Kab. Bekasi": [-6.3643, 107.1724], "Kab. Karawang": [-6.3101, 107.2922], "Kab. Sukabumi": [-6.9934, 106.5510], "Kab. Cianjur": [-6.8206, 107.1421], "Kab. Garut": [-7.2279, 107.9087], "Kab. Tasikmalaya": [-7.3582, 108.1099], "Kab. Ciamis": [-7.3248, 108.3533], "Kab. Kuningan": [-6.9760, 108.4831], "Kab. Cirebon": [-6.7621, 108.4770], "Kab. Majalengka": [-6.8360, 108.2268], "Kab. Sumedang": [-6.8587, 107.9265], "Kab. Indramayu": [-6.3270, 108.3243], "Kab. Subang": [-6.5714, 107.7645], "Kab. Purwakarta": [-6.5561, 107.4421],
+    "Serang": [-6.1104, 106.1640], "Tangerang": [-6.1730, 106.6300], "Cilegon": [-6.0154, 106.0538], "Tangerang Selatan": [-6.2912, 106.7071], "Kab. Serang": [-6.0699, 106.1834], "Kab. Tangerang": [-6.1873, 106.4867], "Kab. Lebak": [-6.6669, 106.2238], "Kab. Pandeglang": [-6.6908, 105.7720],
+    "Semarang": [-6.9667, 110.4167], "Surakarta": [-7.5755, 110.8243], "Magelang": [-7.4797, 110.2177], "Pekalongan": [-6.8889, 109.6753], "Salatiga": [-7.3305, 110.5084], "Tegal": [-6.8694, 109.1402], "Kab. Semarang": [-7.2185, 110.4619], "Kab. Kendal": [-6.9922, 110.1706], "Kab. Demak": [-6.8906, 110.6409], "Kab. Grobogan": [-7.0872, 110.9030], "Kab. Boyolali": [-7.5186, 110.6346], "Kab. Klaten": [-7.7051, 110.6015], "Kab. Sukoharjo": [-7.6749, 110.8351], "Kab. Wonogiri": [-7.9177, 110.9272], "Kab. Karanganyar": [-7.6186, 111.0368], "Kab. Sragen": [-7.4128, 110.9634], "Kab. Kudus": [-6.8049, 110.8405], "Kab. Jepara": [-6.5833, 110.6705], "Kab. Pati": [-6.7570, 111.0368], "Kab. Rembang": [-6.7059, 111.3364], "Kab. Blora": [-6.9701, 111.4177], "Kab. Banyumas": [-7.4253, 109.2274], "Kab. Cilacap": [-7.7061, 109.0069], "Kab. Purbalingga": [-7.3879, 109.3621], "Kab. Banjarnegara": [-7.3999, 109.6975], "Kab. Kebumen": [-7.6698, 109.6517], "Kab. Purworejo": [-7.7077, 110.0076], "Kab. Wonosobo": [-7.3630, 109.9001], "Kab. Magelang": [-7.4339, 110.2327], "Kab. Temanggung": [-7.3150, 110.1691], "Kab. Batang": [-6.9839, 109.8277], "Kab. Pekalongan": [-7.0279, 109.6019], "Kab. Pemalang": [-6.9698, 109.4312], "Kab. Tegal": [-6.9856, 109.1760], "Kab. Brebes": [-6.9535, 108.9711],
+    "Yogyakarta": [-7.7956, 110.3695], "Kab. Sleman": [-7.7144, 110.3592], "Kab. Bantul": [-7.8965, 110.3246], "Kab. Kulon Progo": [-7.8225, 110.1585], "Kab. Gunungkidul": [-7.9620, 110.6057],
+    "Surabaya": [-7.2575, 112.7521], "Malang": [-7.9666, 112.6326], "Madiun": [-7.6298, 111.5177], "Kediri": [-7.8485, 112.0178], "Mojokerto": [-7.4726, 112.4386], "Batu": [-7.8700, 112.5239], "Pasuruan": [-7.6453, 112.9075], "Probolinggo": [-7.7547, 113.2159], "Blitar": [-8.0954, 112.1610], "Kab. Sidoarjo": [-7.4478, 112.7183], "Kab. Gresik": [-7.1559, 112.5516], "Kab. Mojokerto": [-7.5507, 112.4873], "Kab. Jombang": [-7.5583, 112.2335], "Kab. Bojonegoro": [-7.3093, 111.7766], "Kab. Tuban": [-6.8943, 112.0461], "Kab. Lamongan": [-7.1189, 112.4162], "Kab. Madiun": [-7.5627, 111.6661], "Kab. Ngawi": [-7.4208, 111.4421], "Kab. Magetan": [-7.6337, 111.3653], "Kab. Ponorogo": [-7.9715, 111.4645], "Kab. Pacitan": [-8.1329, 111.1615], "Kab. Kediri": [-7.8166, 112.1669], "Kab. Nganjuk": [-7.5912, 111.9161], "Kab. Blitar": [-8.1332, 112.2132], "Kab. Tulungagung": [-8.0836, 111.9540], "Kab. Trenggalek": [-8.1251, 111.6685], "Kab. Malang": [-8.1505, 112.5841], "Kab. Pasuruan": [-7.7118, 112.8335], "Kab. Probolinggo": [-7.8596, 113.3353], "Kab. Lumajang": [-8.1351, 113.2201], "Kab. Bondowoso": [-7.9351, 113.8427], "Kab. Situbondo": [-7.7661, 114.0044], "Kab. Jember": [-8.1721, 113.6995], "Kab. Banyuwangi": [-8.2192, 114.3692], "Kab. Pamekasan": [-7.1614, 113.4842], "Kab. Sampang": [-7.0422, 113.2505], "Kab. Sumenep": [-7.0051, 113.8601], "Kab. Bangkalan": [-7.0454, 112.9234],
+    "Denpasar": [-8.6705, 115.2126], "Kab. Badung": [-8.5833, 115.1878], "Kab. Gianyar": [-8.4239, 115.2893], "Kab. Tabanan": [-8.4357, 115.0888], "Kab. Buleleng (Singaraja)": [-8.2359, 115.0898], "Kab. Karangasem": [-8.3582, 115.5323], "Kab. Klungkung": [-8.7058, 115.4419], "Kab. Bangli": [-8.2913, 115.3615], "Kab. Jembrana": [-8.2974, 114.6548],
+    "Mataram": [-8.5833, 116.1167], "Bima": [-8.4609, 118.7188], "Kab. Lombok Barat": [-8.6872, 116.1264], "Kab. Lombok Tengah": [-8.7056, 116.2736], "Kab. Lombok Timur": [-8.6473, 116.5273], "Kab. Sumbawa": [-8.7077, 117.2910],
+    "Kupang": [-10.1772, 123.6070], "Kab. Kupang": [-10.0270, 123.8568], "Kab. Timor Tengah Selatan": [-9.8455, 124.3809], "Kab. Sikka (Maumere)": [-8.6500, 122.2500], "Kab. Ende": [-8.7167, 121.7500], "Kab. Manggarai Barat (Labuan Bajo)": [-8.6509, 119.8822],
+    "Pontianak": [-0.0263, 109.3425], "Singkawang": [0.9130, 108.9877], "Kab. Kubu Raya": [-0.3475, 109.3364], "Kab. Sambas": [1.3259, 109.3092], "Kab. Sintang": [0.0637, 111.4981],
+    "Palangkaraya": [-2.2163, 113.9166], "Kab. Kotawaringin Timur": [-2.5298, 112.9611], "Kab. Kapuas": [-3.0094, 114.3949],
+    "Banjarmasin": [-3.3186, 114.5944], "Banjarbaru": [-3.4444, 114.8384], "Kab. Banjar": [-3.3270, 115.0862], "Kab. Tanah Laut": [-3.8825, 114.7797], "Kab. Tabalong": [-1.9267, 115.5411],
+    "Samarinda": [-0.5022, 117.1536], "Balikpapan": [-1.2379, 116.8529], "Bontang": [0.1375, 117.5009], "Kab. Kutai Kartanegara": [-0.4359, 116.9856], "Kab. Kutai Timur": [0.9254, 117.5857], "Kab. Berau": [2.1557, 117.4893],
+    "Tarakan": [3.3077, 117.6339], "Kab. Bulungan": [2.9067, 117.1306], "Kab. Nunukan": [4.1406, 117.6472],
+    "Manado": [1.4748, 124.8428], "Bitung": [1.4404, 125.1895], "Tomohon": [1.3255, 124.8398], "Kotamobagu": [0.7378, 124.3129], "Kab. Minahasa": [1.2728, 124.9080],
+    "Palu": [-0.9010, 119.8327], "Kab. Donggala": [0.6556, 119.8584], "Kab. Poso": [-1.3963, 120.7513], "Kab. Banggai": [-1.3090, 122.9067],
+    "Makassar": [-5.1477, 119.4327], "Parepare": [-4.0125, 119.6236], "Palopo": [-2.9946, 120.1975], "Kab. Gowa": [-5.3274, 119.7431], "Kab. Maros": [-5.0135, 119.6457], "Kab. Bone": [-4.7077, 120.3082], "Kab. Luwu": [-3.1892, 120.2520], "Kab. Tana Toraja": [-3.0907, 119.8633],
+    "Kendari": [-3.9976, 122.5152], "Bau-Bau": [-5.4795, 122.6074], "Kab. Konawe": [-3.8694, 122.0573], "Kab. Muna": [-4.8450, 122.6433],
+    "Gorontalo": [0.5478, 123.0640], "Kab. Gorontalo": [0.6625, 122.8423],
+    "Kab. Mamuju": [-2.6739, 118.8893], "Kab. Majene": [-3.5414, 118.9718],
+    "Ambon": [-3.6536, 128.1788], "Tual": [-5.6267, 132.7491], "Kab. Maluku Tengah": [-3.2929, 128.9668],
+    "Ternate": [0.7836, 127.3820], "Tidore Kepulauan": [0.6976, 127.4087], "Kab. Halmahera Utara": [1.4429, 127.9712],
+    "Jayapura": [-2.5489, 140.7180], "Kab. Jayapura": [-2.9830, 140.0633], "Kab. Keerom": [-3.3267, 140.6389], "Kab. Sarmi": [-2.4277, 139.0886],
+    "Manokwari": [-0.8615, 134.0620], "Kab. Fakfak": [-2.9261, 132.2994], "Kab. Kaimana": [-3.6606, 133.7709],
+    "Kab. Merauke": [-8.4900, 140.4010], "Kab. Boven Digoel": [-6.0594, 140.3533], "Kab. Mappi": [-6.5369, 139.6703], "Kab. Asmat": [-5.4497, 138.4069],
+    "Kab. Nabire": [-3.3547, 135.4988], "Kab. Mimika (Timika)": [-4.5461, 136.8863], "Kab. Puncak Jaya": [-3.6708, 137.9622],
+    "Kab. Jayawijaya (Wamena)": [-4.0970, 138.9413], "Kab. Yahukimo": [-4.5208, 139.5292],
+    "Sorong": [-0.8757, 131.2562], "Kab. Sorong": [-1.2294, 131.5392], "Kab. Raja Ampat": [-0.2333, 130.5167]
+};
+
+const marketItems = [ { id: 1, cat: 'pulsa', name: 'Pulsa 10k (All Op)', price: 1200, icon: 'fa-mobile-alt', color: '#3b82f6' }, { id: 2, cat: 'pulsa', name: 'Data 2GB Indosat', price: 2500, icon: 'fa-wifi', color: '#3b82f6' }, { id: 3, cat: 'pulsa', name: 'Data 3GB Tsel', price: 3500, icon: 'fa-wifi', color: '#ef4444' }, { id: 4, cat: 'wallet', name: 'Gopay 20.000', price: 2200, icon: 'fa-wallet', color: '#10b981' }, { id: 5, cat: 'wallet', name: 'ShopeePay 20k', price: 2200, icon: 'fa-shopping-bag', color: '#f97316' }, { id: 6, cat: 'umkm', name: 'Sedotan Bambu', price: 500, icon: 'fa-leaf', color: '#84cc16' }, { id: 7, cat: 'umkm', name: 'Tas Totebag Eco', price: 1500, icon: 'fa-shopping-basket', color: '#f59e0b' }, { id: 8, cat: 'umkm', name: 'Sabun Organik', price: 800, icon: 'fa-pump-soap', color: '#ec4899' }, { id: 9, cat: 'donasi', name: '1 Bibit Mangrove', price: 2000, icon: 'fa-tree', color: '#047857' }, { id: 10, cat: 'donasi', name: 'Pakan Kucing Jalanan', price: 1000, icon: 'fa-cat', color: '#f59e0b' } ];
+let map = null; let currentItem = null;
+
+window.onload = function() { renderProvinceList(); renderMarket('all'); updateBalanceUI(); renderActionHistory(); renderLeaderboard(); };
+
+// --- ENABLE DRAG SCROLL (JAVASCRIPT) ---
 function enableDragScroll(elm) {
-    let isDown = false; let startX; let scrollLeft;
-    elm.addEventListener('mousedown', (e) => { isDown = true; elm.style.cursor = 'grabbing'; startX = e.pageX - elm.offsetLeft; scrollLeft = elm.scrollLeft; });
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    elm.addEventListener('mousedown', (e) => {
+        isDown = true;
+        elm.style.cursor = 'grabbing';
+        startX = e.pageX - elm.offsetLeft;
+        scrollLeft = elm.scrollLeft;
+    });
     elm.addEventListener('mouseleave', () => { isDown = false; elm.style.cursor = 'grab'; });
     elm.addEventListener('mouseup', () => { isDown = false; elm.style.cursor = 'grab'; });
-    elm.addEventListener('mousemove', (e) => { if (!isDown) return; e.preventDefault(); const x = e.pageX - elm.offsetLeft; const walk = (x - startX) * 2; elm.scrollLeft = scrollLeft - walk; });
+    elm.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - elm.offsetLeft;
+        const walk = (x - startX) * 2; // Kecepatan scroll
+        elm.scrollLeft = scrollLeft - walk;
+    });
 }
+// Terapkan ke elemen scroll
+document.querySelectorAll('.category-scroll, .badges-scroll').forEach(enableDragScroll);
 
-// --- LOGIC UTAMA ---
+
+// LOGIC UTAMA
 function doLogin() { document.getElementById('login').classList.remove('active'); document.getElementById('home').classList.add('active'); document.getElementById('bottom-nav').style.display='flex'; }
 function doLogout() { document.getElementById('home').classList.remove('active'); document.getElementById('profile').classList.remove('active'); document.getElementById('login').classList.add('active'); document.getElementById('bottom-nav').style.display='none'; }
 function doRegister() { navTo('register'); }
+
+// NEW: REGISTER SUBMIT -> POPUP -> HOME (DENGAN NAMA BARU)
 function doRegisterSubmit() { 
+    // Ambil nama dari input
     const newName = document.getElementById('reg-name').value;
+    
     if(newName.trim() !== "") {
         document.getElementById('home-username').innerText = newName;
         document.getElementById('profile-username').innerText = newName;
+        
+        // Update Nama di Leaderboard
         let userIndex = leaderboardData.findIndex(u => u.isUser === true);
-        if(userIndex !== -1) { leaderboardData[userIndex].name = newName + " (Anda)"; }
+        if(userIndex !== -1) {
+            leaderboardData[userIndex].name = newName + " (Anda)";
+        }
         renderLeaderboard();
     }
+
     document.getElementById('register-success-modal').style.display = 'flex';
 }
+
 function finishRegister() {
     document.getElementById('register-success-modal').style.display = 'none';
     document.getElementById('register').classList.remove('active');
@@ -367,164 +512,148 @@ function finishRegister() {
     document.getElementById('bottom-nav').style.display='flex';
 }
 
+function updateBalanceUI() { 
+    let formatted = userBalance.toLocaleString('id-ID'); 
+    document.getElementById('coin-display').innerText = formatted; 
+    document.getElementById('market-balance-display').innerText = formatted + ' GC'; 
+    document.getElementById('profile-coin-display').innerText = (userBalance/1000).toFixed(1) + 'k';
+    
+    // UPDATE STATS DYNAMIC
+    document.getElementById('stat-waste-val').innerText = statWaste.toFixed(1) + 'kg';
+    document.getElementById('stat-co2-val').innerText = statCO2.toFixed(1) + 'kg';
+    document.getElementById('stat-mission-val').innerText = statMissions;
+    document.getElementById('stat-mission-profile').innerText = statMissions;
+
+    // LEVEL SYSTEM
+    let currentLevel = Math.floor(userTotalXP / xpPerLevel) + 1;
+    let xpInCurrentLevel = userTotalXP % xpPerLevel;
+    let percentage = (xpInCurrentLevel / xpPerLevel) * 100;
+
+    document.getElementById('user-level-display').innerText = `Level ${currentLevel}: Penjaga Sungai`;
+    document.getElementById('xp-text-home').innerText = percentage.toFixed(0) + '%';
+    document.getElementById('xp-bar-home').style.width = percentage + '%';
+    
+    updateUserInLeaderboard();
+}
+
+function updateUserInLeaderboard() {
+    let userIndex = leaderboardData.findIndex(u => u.isUser === true);
+    if(userIndex !== -1) {
+        leaderboardData[userIndex].xp = userTotalXP;
+    }
+    renderLeaderboard();
+}
+
+function renderLeaderboard() {
+    leaderboardData.sort((a, b) => b.xp - a.xp);
+    const container = document.getElementById('rank-list-container');
+    container.innerHTML = '';
+
+    leaderboardData.forEach((user, index) => {
+        let rankClass = '';
+        let rankNumColor = '#666';
+        if(index === 0) { rankClass = 'top-1'; rankNumColor = '#f59e0b'; }
+        
+        let itemStyle = user.isUser ? 'border: 2px solid var(--primary); background: #ecfdf5; margin-top: 5px;' : '';
+        if (index === 0) itemStyle += ' border: 2px solid #FFD700; background: #fffbeb;';
+
+        let badge = user.isUser ? `<span style="font-size:10px; color:#666;">Penjaga Sungai</span>` : `<span style="font-size:10px; color:#666;">${user.role}</span>`;
+        if (index === 0) badge = `<span style="font-size:10px; background:#d1fae5; color:var(--primary); padding:2px 5px; border-radius:4px;">${user.role}</span>`;
+
+        let html = `
+            <div class="rank-item ${rankClass}" style="${itemStyle}">
+                <span class="rank-num" style="width:20px; font-weight:bold; color:${rankNumColor};">${index + 1}</span>
+                <img src="${user.avatar}" class="avatar-img">
+                <div style="flex:1;">
+                    <div class="rank-name" style="font-weight:bold; font-size:14px;">${user.name}</div>
+                    ${badge}
+                </div>
+                <div class="rank-score"><b>${user.xp} XP</b></div>
+            </div>
+        `;
+        container.innerHTML += html;
+    });
+
+    let myRank = leaderboardData.findIndex(u => u.isUser === true) + 1;
+    document.getElementById('profile-rank-display').innerText = '#' + myRank;
+}
+
+function renderActionHistory() { 
+    const list = document.getElementById('profile-action-history'); 
+    list.innerHTML = ''; 
+    actionHistoryLog.forEach(item => { list.innerHTML += `<div class="list-item" style="margin:0 0 10px 0;"><div><div style="font-weight:bold; font-size:13px;">${item.title}</div><div style="font-size:10px; color:#888;">${item.date}</div></div><b style="color:var(--primary); font-size:12px;">${item.coin}</b></div>`; }); 
+}
+
 function navTo(screenId) { 
     document.querySelectorAll('.screen').forEach(el => el.classList.remove('active')); 
     if(screenId !== 'login' && screenId !== 'register') document.getElementById('bottom-nav').style.display='flex';
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); 
+    
     if(screenId !== 'login') document.getElementById(screenId).classList.add('active');
+    
     if(screenId === 'home') document.querySelectorAll('.nav-item')[0].classList.add('active'); 
     if(screenId === 'rank') document.querySelectorAll('.nav-item')[1].classList.add('active'); 
     if(screenId === 'market') document.querySelectorAll('.nav-item')[2].classList.add('active'); 
     if(screenId === 'profile') document.querySelectorAll('.nav-item')[3].classList.add('active'); 
     
-    if(screenId === 'scan') { 
-        startCamera(); 
-    } else {
-        stopCamera();
-    }
-    
+    if(screenId !== 'scan') { document.getElementById('scanning-anim').style.display = 'none'; } 
     if(screenId === 'map-view' && map) setTimeout(() => map.invalidateSize(), 300); 
 }
 
-// --- CAMERA & AI LOGIC ---
-let videoStream = null;
-
-function startCamera() {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-        .then(function (stream) {
-            videoStream = stream;
-            const video = document.getElementById('video-feed');
-            video.srcObject = stream;
-            video.play();
-            document.getElementById('captured-image').style.display = 'none';
-            video.style.display = 'block';
-        })
-        .catch(function (err) {
-            console.log("Error Camera", err);
-            alert("Kamera tidak dapat diakses. Pastikan izin diberikan atau gunakan HTTPS/Localhost.");
-        });
-    }
+function openMapSelection() { navTo('map-select'); }
+function renderProvinceList() { const list = document.getElementById('province-list-container'); list.innerHTML = ''; Object.keys(indonesiaMapData).sort().forEach(prov => { list.innerHTML += `<div class="list-item" onclick="openCitySelect('${prov}')"><b>${prov}</b><i class="fas fa-chevron-right"></i></div>`; }); }
+function openCitySelect(province) { navTo('city-select'); document.getElementById('province-title').innerText = province; const list = document.getElementById('city-list'); list.innerHTML = ''; indonesiaMapData[province].forEach(city => { list.innerHTML += `<div class="list-item" onclick="loadRealMap('${city}')"><div style="display:flex; gap:10px;"><i class="fas fa-city" style="color:var(--primary)"></i><b>${city}</b></div></div>`; }); }
+function loadRealMap(cityName) { 
+    navTo('map-view'); 
+    document.getElementById('map-city-name').innerText = cityName; 
+    let coords = cityCoordinates[cityName] || [-6.1751, 106.8650]; 
+    if (map !== null) map.remove(); 
+    setTimeout(() => { 
+        map = L.map('map-container-real').setView(coords, 14); 
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map); 
+        L.circle(coords, {color: 'red', radius: 300}).addTo(map); 
+    }, 500); 
 }
 
-function stopCamera() {
-    if (videoStream) {
-        videoStream.getTracks().forEach(track => track.stop());
-        videoStream = null;
-    }
+function renderMarket(filter) { const grid = document.getElementById('market-items'); grid.innerHTML = ''; marketItems.forEach(item => { if(filter === 'all' || item.cat === filter) { grid.innerHTML += `<div class="market-item" onclick="openConfirm(${item.id})"><div class="market-img" style="color:${item.color}"><i class="fas ${item.icon}"></i></div><div class="market-info"><div style="font-weight:bold; font-size:13px;">${item.name}</div><div class="market-price"><i class="fas fa-coins"></i> ${item.price}</div></div></div>`; } }); }
+function filterMarket(cat, el) { document.querySelectorAll('.cat-pill').forEach(c => c.classList.remove('active')); el.classList.add('active'); renderMarket(cat); }
+function openConfirm(id) { currentItem = marketItems.find(i => i.id === id); document.getElementById('modal-title').innerText = currentItem.name; document.getElementById('modal-desc').innerText = `Harga: ${currentItem.price} GC`; document.getElementById('modal-icon').innerHTML = `<i class="fas ${currentItem.icon}" style="color:${currentItem.color}"></i>`; document.getElementById('modal-balance').innerText = `${userBalance - currentItem.price} GC (Sisa)`; document.getElementById('confirm-modal').style.display = 'flex'; }
+function closeModal() { document.getElementById('confirm-modal').style.display = 'none'; }
+function closeSuccessModal() { document.getElementById('transaction-success-modal').style.display = 'none'; }
+
+function processTransaction() { 
+    if(userBalance >= currentItem.price) { 
+        userBalance -= currentItem.price; 
+        updateBalanceUI(); 
+        transactionHistory.unshift({name: currentItem.name, price: currentItem.price, date: new Date().toLocaleTimeString()}); 
+        closeModal(); 
+        document.getElementById('success-item-name').innerText = currentItem.name; 
+        document.getElementById('transaction-success-modal').style.display = 'flex'; 
+    } else { 
+        closeModal(); 
+        document.getElementById('insufficient-modal').style.display = 'flex'; 
+    } 
 }
 
-async function takePhoto() {
-    const video = document.getElementById('video-feed');
-    const canvas = document.getElementById('camera-canvas');
-    const photo = document.getElementById('captured-image');
-    
-    // Capture Frame
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const context = canvas.getContext('2d');
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    
-    // Show Photo
-    photo.src = canvas.toDataURL('image/png');
-    photo.style.display = 'block';
-    video.style.display = 'none';
-    
-    // UI Analysis
-    document.getElementById('scanning-anim').style.display = 'block';
-    
-    // RUN AI DETECTION
-    if(aiModel) {
-        try {
-            const predictions = await aiModel.detect(photo);
-            processAIDetection(predictions);
-        } catch (e) {
-            console.log("AI Error", e);
-            fallbackDetection();
-        }
-    } else {
-        fallbackDetection();
-    }
-}
+function openHistory() { const list = document.getElementById('history-list'); if(transactionHistory.length === 0) { list.innerHTML = '<p style="font-size:12px; color:#999; text-align:center;">Belum ada penukaran baru.</p>'; } else { list.innerHTML = ''; transactionHistory.forEach(h => { list.innerHTML += `<div style="display:flex; justify-content:space-between; border-bottom:1px solid #eee; padding:5px 0; font-size:12px;"><span>${h.name}</span><b style="color:#ef4444;">-${h.price}</b></div>`; }); } document.getElementById('history-modal').style.display = 'flex'; }
 
-function processAIDetection(predictions) {
-    // Default Result
-    currentDetectedTrash = "Sampah Residu (Lainnya)";
-    currentRewardCoin = 100;
-    currentRewardXP = 50;
-
-    if (predictions.length > 0) {
-        // Ambil prediksi dengan skor tertinggi
-        const topPred = predictions[0].class.toLowerCase();
-        console.log("AI Detected:", topPred);
-
-        // Logic Klasifikasi Sampah
-        if (['bottle', 'cup', 'wine glass', 'vase'].includes(topPred)) {
-            currentDetectedTrash = "Sampah Plastik/Kaca (Anorganik)";
-            currentRewardCoin = 500; currentRewardXP = 200;
-        } else if (['apple', 'banana', 'orange', 'broccoli', 'carrot', 'sandwich', 'pizza', 'donut', 'cake'].includes(topPred)) {
-            currentDetectedTrash = "Sampah Organik (Kompos)";
-            currentRewardCoin = 300; currentRewardXP = 150;
-        } else if (['book', 'paper', 'cardboard'].includes(topPred)) {
-            currentDetectedTrash = "Kertas/Kardus (Daur Ulang)";
-            currentRewardCoin = 200; currentRewardXP = 100;
-        } else if (['cell phone', 'laptop', 'mouse', 'keyboard', 'remote', 'tv'].includes(topPred)) {
-            currentDetectedTrash = "E-Waste (Elektronik)";
-            currentRewardCoin = 1000; currentRewardXP = 500;
-        } else if (['can', 'fork', 'knife', 'spoon'].includes(topPred)) {
-            currentDetectedTrash = "Logam/Kaleng";
-            currentRewardCoin = 700; currentRewardXP = 300;
-        } else {
-            currentDetectedTrash = `Objek Terdeteksi: ${topPred}`;
-        }
-    } else {
-        currentDetectedTrash = "Objek Tidak Dikenal";
-    }
-    
-    showResultModal();
-}
-
-function fallbackDetection() {
-    // Simulasi jika AI gagal/belum load
-    setTimeout(() => {
-        const types = [
-            {t: "Botol Plastik", c: 500, x: 200},
-            {t: "Sampah Organik", c: 300, x: 150},
-            {t: "Kertas Bekas", c: 200, x: 100}
-        ];
-        const rand = types[Math.floor(Math.random() * types.length)];
-        currentDetectedTrash = rand.t + " (Simulasi)";
-        currentRewardCoin = rand.c;
-        currentRewardXP = rand.x;
-        showResultModal();
-    }, 2000);
-}
-
-function showResultModal() {
-    setTimeout(() => {
-        document.getElementById('scanning-anim').style.display = 'none';
-        
-        // Update Modal Content
-        document.getElementById('ai-result-text').innerHTML = `Jenis: <b>${currentDetectedTrash}</b>`;
-        document.getElementById('ai-reward-coin').innerText = `+ ${currentRewardCoin} Poin`;
-        document.getElementById('ai-reward-xp').innerText = `+ ${currentRewardXP} XP`;
-        
-        document.getElementById('reward-modal').style.display = 'flex';
-        stopCamera();
-    }, 1500); // Sedikit delay biar animasi terlihat
-}
+function takePhoto() { document.getElementById('scanning-anim').style.display = 'block'; setTimeout(() => { document.getElementById('scanning-anim').style.display = 'none'; document.getElementById('reward-modal').style.display = 'flex'; }, 2000); }
 
 function claimReward() { 
-    userBalance += currentRewardCoin; 
+    userBalance += 500; 
     
-    statWaste += 1.5; statCO2 += 0.5; statMissions += 1;
+    // UPDATE LOGIC STATS (NAIK TERUS)
+    statWaste += 1.5; 
+    statCO2 += 0.5;
+    statMissions += 1;
 
     let levelBefore = Math.floor(userTotalXP / xpPerLevel) + 1;
-    userTotalXP += currentRewardXP; 
+    userTotalXP += 1000; 
     let levelAfter = Math.floor(userTotalXP / xpPerLevel) + 1;
 
-    actionHistoryLog.unshift({ title: `Deteksi AI: ${currentDetectedTrash.split('(')[0]}`, date: "Baru saja", coin: `+${currentRewardCoin}` }); 
+    actionHistoryLog.unshift({ title: "Deteksi AI: Botol Plastik", date: "Baru saja", coin: "+500" }); 
     renderActionHistory();
+    
     updateBalanceUI(); 
     document.getElementById('reward-modal').style.display = 'none'; 
     
@@ -532,21 +661,11 @@ function claimReward() {
         document.getElementById('new-level-name').innerText = "Level " + levelAfter;
         document.getElementById('levelup-modal').style.display = 'flex';
     }
+
     navTo('home'); 
 }
-
-// --- HELPER FUNCTIONS ---
-function openMapSelection() { navTo('map-select'); }
-function renderProvinceList() { const list = document.getElementById('province-list-container'); list.innerHTML = ''; Object.keys(indonesiaMapData).sort().forEach(prov => { list.innerHTML += `<div class="list-item" onclick="openCitySelect('${prov}')"><b>${prov}</b><i class="fas fa-chevron-right"></i></div>`; }); }
-function openCitySelect(province) { navTo('city-select'); document.getElementById('province-title').innerText = province; const list = document.getElementById('city-list'); list.innerHTML = ''; indonesiaMapData[province].forEach(city => { list.innerHTML += `<div class="list-item" onclick="loadRealMap('${city}')"><div style="display:flex; gap:10px;"><i class="fas fa-city" style="color:var(--primary)"></i><b>${city}</b></div></div>`; }); }
-function loadRealMap(cityName) { navTo('map-view'); document.getElementById('map-city-name').innerText = cityName; let coords = cityCoordinates[cityName] || [-6.1751, 106.8650]; if (map !== null) map.remove(); setTimeout(() => { map = L.map('map-container-real').setView(coords, 14); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map); L.circle(coords, {color: 'red', radius: 300}).addTo(map); }, 500); }
-function renderMarket(filter) { const grid = document.getElementById('market-items'); grid.innerHTML = ''; marketItems.forEach(item => { if(filter === 'all' || item.cat === filter) { grid.innerHTML += `<div class="market-item" onclick="openConfirm(${item.id})"><div class="market-img" style="color:${item.color}"><i class="fas ${item.icon}"></i></div><div class="market-info"><div style="font-weight:bold; font-size:13px;">${item.name}</div><div class="market-price"><i class="fas fa-coins"></i> ${item.price}</div></div></div>`; } }); }
-function filterMarket(cat, el) { document.querySelectorAll('.cat-pill').forEach(c => c.classList.remove('active')); el.classList.add('active'); renderMarket(cat); }
-function openConfirm(id) { currentItem = marketItems.find(i => i.id === id); document.getElementById('modal-title').innerText = currentItem.name; document.getElementById('modal-desc').innerText = `Harga: ${currentItem.price} GC`; document.getElementById('modal-icon').innerHTML = `<i class="fas ${currentItem.icon}" style="color:${currentItem.color}"></i>`; document.getElementById('modal-balance').innerText = `${userBalance - currentItem.price} GC (Sisa)`; document.getElementById('confirm-modal').style.display = 'flex'; }
-function closeModal() { document.getElementById('confirm-modal').style.display = 'none'; }
-function closeSuccessModal() { document.getElementById('transaction-success-modal').style.display = 'none'; }
-function processTransaction() { if(userBalance >= currentItem.price) { userBalance -= currentItem.price; updateBalanceUI(); transactionHistory.unshift({name: currentItem.name, price: currentItem.price, date: new Date().toLocaleTimeString()}); closeModal(); document.getElementById('success-item-name').innerText = currentItem.name; document.getElementById('transaction-success-modal').style.display = 'flex'; } else { closeModal(); document.getElementById('insufficient-modal').style.display = 'flex'; } }
-function openHistory() { const list = document.getElementById('history-list'); if(transactionHistory.length === 0) { list.innerHTML = '<p style="font-size:12px; color:#999; text-align:center;">Belum ada penukaran baru.</p>'; } else { list.innerHTML = ''; transactionHistory.forEach(h => { list.innerHTML += `<div style="display:flex; justify-content:space-between; border-bottom:1px solid #eee; padding:5px 0; font-size:12px;"><span>${h.name}</span><b style="color:#ef4444;">-${h.price}</b></div>`; }); } document.getElementById('history-modal').style.display = 'flex'; }
 </script>
 </body>
+
 </html>
+
